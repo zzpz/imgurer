@@ -1,0 +1,10 @@
+fastapi # api
+uvicorn # web server
+alembic # db migrations
+sqlalchemy  # ORM
+sqlalchemy-utils    # ORM 2
+jinja2  # javascript templates
+python-multipart # forms and files
+python-jose[cryptography] # JWT + security
+passlib[bcrypt] # hashing passwords
+pillow  # image manipulation
