@@ -47,7 +47,6 @@ def authenticate_user(users_db: Session, username: str, password:str):
     """
         Takes username and password, retrieves user from DB, calls password verification on hashed password
     """
-    # multiple tries / security prevention here ()
     user = crud.get_user(users_db, username)
     if not user:
         return False
@@ -67,7 +66,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(users_db:Session, token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    users_db:Session = Depends(get_user_db),
+    token: str = Depends(oauth2_scheme),
+    response_model = schemas.UserOut
+    ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -96,7 +99,7 @@ async def get_current_user(users_db:Session, token: str = Depends(oauth2_scheme)
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(users_db: Session = Depends(get_user_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = crud.authenticate_user(users_db, form_data.username, form_data.password)
+    user = authenticate_user(users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -135,3 +138,6 @@ def create_user(
         )
     return created_user
 
+# @app.get("/user/")
+# def get_all(current_user = Depends(get_current_user)):
+#     return current_user
