@@ -23,17 +23,19 @@ class UserCreate(UserBase):
     password: str
     email : Optional[str] = None
 
-class User(UserBase):
-    #first
-    #last
-    #description
-    #other
-    disabled : bool
-
-
-class UserInDB(User):
+class UserInDB(UserBase):
     hashed_password: str
 
+class UserOut(UserBase):
+    email: Optional[str] = None
+    pass
 
+
+class ImageBase(BaseModel):
+    ...
+    #hash
+    #url
+    #id
+    #
 
 

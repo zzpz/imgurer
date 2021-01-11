@@ -87,10 +87,10 @@ async def get_current_user(users_db:Session, token: str = Depends(oauth2_scheme)
         return credentials_exception
     return user
 
-async def get_current_user_values(current_user: schemas.User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+# async def get_current_user_values(current_user: = Depends(get_current_user)):
+#     if current_user.disabled:
+#         raise HTTPException(status_code=400, detail="Inactive user")
+#     return current_user
 
 
 
@@ -117,11 +117,21 @@ async def login_for_access_token(users_db: Session = Depends(get_user_db), form_
 async def root():
     return {"message": "Hello World"}
 
-@app.post("/user/new/")
-def create_user(user:schemas.UserCreate, user_db: Session = Depends(get_user_db)):
+@app.post("/user/new/",response_model= schemas.UserOut, status_code=201)
+def create_user(
+    user:schemas.UserCreate,
+    user_db: Session = Depends(get_user_db)):
     """
 
     create a user (uname, pass, optional email) --> userCreate Schema
 
     """
-    return crud.create_user(users_db=user_db, user = user)
+    created_user = crud.create_user(users_db=user_db, user = user)
+    if not created_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Username already exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return created_user
+

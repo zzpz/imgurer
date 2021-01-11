@@ -9,6 +9,8 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from . import models, schemas #TokenData
 from .database import SessionLocal, engine #singular database for users and images
+from sqlalchemy.exc import IntegrityError
+
 
 
 #password
@@ -33,10 +35,15 @@ def get_password_hash(password):
 
 def create_user(users_db:Session,user:schemas.UserCreate):
     db_user = models.User(username=user.username,hashed_password = get_password_hash(user.password))
-    users_db.add(db_user)
-    users_db.commit()
-    users_db.refresh(db_user)
-    return db_user
+    try:
+        users_db.add(db_user)
+        users_db.commit()
+        users_db.refresh(db_user)
+        return user
+    except IntegrityError as duplicate_uname:
+        return None
+        
+
 
 def get_user(users_db: Session, username: str):
     
