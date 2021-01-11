@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 #utility
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 
 from . import crud, schemas, models
 
@@ -14,6 +14,10 @@ from . import crud, schemas, models
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+#files (images)
+from fastapi import File, UploadFile
+import shutil
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -141,3 +145,17 @@ def create_user(
 def get_all(current_user = Depends(get_current_user)):
     return current_user
 
+@app.post("/image")
+async def upload_image(image: UploadFile = File(...)):
+    destination_folder = "./NAS/"
+    with open(f"{destination_folder}desination.png","wb") as buffer:
+        shutil.copyfileobj(image.file,buffer)
+
+    return {"filename": image.filename, "content_type":image.content_type, "file":image.file}
+
+@app.post("/images")
+async def upload_images(images: List[UploadFile] = File(...)):
+    destination_folder = "./NAS/"
+    for image in images:
+        with open(f"{destination_folder}{image.filename}","wb") as buffer:
+            shutil.copyfileobj(image.file,buffer)

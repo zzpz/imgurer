@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 
 #utility
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional,List
 
 #SQL
 from sqlalchemy.orm import Session
@@ -12,7 +12,8 @@ from .database import SessionLocal, engine #singular database for users and imag
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-
+#images
+from fastapi import UploadFile
 
 #password
 from passlib.context import CryptContext
@@ -54,7 +55,9 @@ def get_user(users_db: Session, username: str):
         return None
 
 
-    
+def create_image(images_db: Session, image: UploadFile):
+    ...
+     
 
 def update_user():
     pass
