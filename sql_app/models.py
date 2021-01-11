@@ -16,9 +16,10 @@ class User(Base):
     #https://www.techonthenet.com/sqlite/functions/now.php
     # ternary operator: a if condition else b
 
-    password = Column(String) #hashed
+    hashed_password = Column(String) #hashed
     username = Column(String, unique = True)
     permission_lvl = Column(Integer)
+    disabled = Column(Boolean, default = False)
 
 
     image = relationship("Image", back_populates="owner") #maintains referential
