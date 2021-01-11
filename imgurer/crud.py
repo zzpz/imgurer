@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas #TokenData
 from .database import SessionLocal, engine #singular database for users and images
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 
 
 
@@ -46,8 +47,14 @@ def create_user(users_db:Session,user:schemas.UserCreate):
 
 
 def get_user(users_db: Session, username: str):
+    try:
+        user = users_db.query(models.User).filter(models.User.username==username).first()
+        return schemas.UserInDB(username = user.username, hashed_password =user.hashed_password)
+    except NoResultFound as not_found:
+        return None
+
+
     
-    pass
 
 def update_user():
     pass

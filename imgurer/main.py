@@ -68,8 +68,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 async def get_current_user(
     users_db:Session = Depends(get_user_db),
-    token: str = Depends(oauth2_scheme),
-    response_model = schemas.UserOut
+    token: str = Depends(oauth2_scheme)
     ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -106,8 +105,8 @@ async def login_for_access_token(users_db: Session = Depends(get_user_db), form_
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=crud.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = crud.create_access_token(
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -138,6 +137,7 @@ def create_user(
         )
     return created_user
 
-# @app.get("/user/")
-# def get_all(current_user = Depends(get_current_user)):
-#     return current_user
+@app.get("/user/", response_model=schemas.UserOut)
+def get_all(current_user = Depends(get_current_user)):
+    return current_user
+
