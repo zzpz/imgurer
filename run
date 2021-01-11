@@ -1,0 +1,1 @@
+uvicorn imgurer.main:app --reload
