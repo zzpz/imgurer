@@ -8,6 +8,12 @@ from .database import Base
 
 from .database import DB_PROVIDER #TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
 
+# many to many images:tags
+images_tags_association = Table('image_tags', Base.metadata,
+    Column('image_id', Integer, ForeignKey('images.id')),
+    Column('tag_id', Integer, ForeignKey('tags.id'))
+)
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True) #pk
@@ -23,6 +29,9 @@ class User(Base):
 
 
     image = relationship("Image", back_populates="owner") #maintains referential
+
+    class Config:
+        orm_mode = True
 
 
 
@@ -43,6 +52,10 @@ class Image(Base):
         "Tag",
         secondary=images_tags_association,
         back_populates="images")
+    
+    class Config:
+        orm_mode = True
+
 
 class Tag(Base):
     __tablename__ = "tags"
@@ -51,14 +64,14 @@ class Tag(Base):
 
     title = Column(String(length=255))
 
-    tags = relationship(
+    images = relationship(
         "Image",
         secondary=images_tags_association,
         back_populates="tags")
 
-# many to many images:tags
-images_tags_association = Table('image_tags', Base.metadata,
-    Column('image_id', Integer, ForeignKey('images.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
-)
+    class Config:
+        orm_mode = True
+
+
+
     
