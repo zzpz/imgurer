@@ -24,7 +24,6 @@ class UserCreate(UserBase):
     email : Optional[str] = None
 
 class UserOut(UserBase):
-    username: str
     pass
 
 class UserInDB(UserBase):

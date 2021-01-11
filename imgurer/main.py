@@ -1,27 +1,32 @@
-from fastapi import FastAPI, Request, Depends, HTTPException,status
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from .database import SessionLocal,engine
 from pydantic import BaseModel
 
-#utility
+# utility
 from datetime import datetime, timedelta
 from typing import Optional, List
 
 from . import crud, schemas, models
 
-#tokens
+# Front end
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+
+# tokens
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-#files (images)
-from fastapi import File, UploadFile
+# files (images + form data)
+from fastapi import File, UploadFile, Form
 import shutil
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 def get_user_db():
     """
@@ -60,7 +65,10 @@ def authenticate_user(users_db: Session, username: str, password:str):
 
 
 #### TOKEN
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(
+    data: dict
+    , expires_delta: Optional[timedelta] = None
+    ):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -101,7 +109,10 @@ async def get_current_user(
 
 
 @app.post("/token", response_model=schemas.Token)
-async def login_for_access_token(users_db: Session = Depends(get_user_db), form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(
+    users_db: Session = Depends(get_user_db),
+    form_data: OAuth2PasswordRequestForm = Depends()
+    ):
     user = authenticate_user(users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -119,9 +130,7 @@ async def login_for_access_token(users_db: Session = Depends(get_user_db), form_
 
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+
 
 @app.post("/user/new/",response_model= schemas.UserOut, status_code=201)
 def create_user(
@@ -141,9 +150,9 @@ def create_user(
         )
     return created_user
 
-@app.get("/user/", response_model=schemas.UserOut)
+@app.get("/user/all", response_model=schemas.UserOut)
 def get_all(current_user = Depends(get_current_user)):
-    return current_user
+    return current_user   
 
 @app.post("/image")
 async def upload_image(image: UploadFile = File(...)):
@@ -159,3 +168,8 @@ async def upload_images(images: List[UploadFile] = File(...)):
     for image in images:
         with open(f"{destination_folder}{image.filename}","wb") as buffer:
             shutil.copyfileobj(image.file,buffer)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def read_user(request: Request):
+    return templates.TemplateResponse("home.html", {"request":request})
