@@ -1,6 +1,13 @@
 from pathlib import Path
 
 
+async def get_nas():
+    return "NAS/"
+
+def ensure_dir(dir_path: str):
+    # if directory does not exist we need to make it
+    path = Path(dir_path)
+    Path.mkdir(path, parents=True, exist_ok=True)     #fails silently
 
 
 def userhash(username:str):
@@ -13,17 +20,25 @@ def userhash(username:str):
         probably shouldn't use username itself in path
     """
     simple_hash = username[:3]
-    return  
+    return simple_hash
 
-def calc_item_url(username:str, image_hash: str):
+def calc_item_url(username:str, image_hash: str, nas: str = get_nas()):
     """
     TODO:
         calculate where a given uploaded file should be stored on disk
         handle collisions in filenames
         update reference in database accordingly
+
+        could be better if i wrote files to a temp folder, validated all their directories then fired them in async
     """
     #calculate image url (path pattern)
-    path_pattern = f"{userhash(username)}/{username}/{image_hash[:3]}/{image_hash[3:6]}/{image_hash}_%s.jpg"
+
+    # ensure dir exists
+    dir_path = f"{nas}/{userhash(username)}/{username}/{image_hash[:2]}/{image_hash[2:4]}"
+    ensure_dir(dir_path)
+
+    # calc path
+    path_pattern = f"{userhash(username)}/{username}/{image_hash[:2]}/{image_hash[2:4]}/{image_hash}_%s.jpg"
 
     url = next_file_path(path_pattern)
 
@@ -47,8 +62,7 @@ def calc_item_url(username:str, image_hash: str):
     # means upload requires auth
     # means I need to sort a basic user login / auth
 
-    return ""
-    #userhash[:2]/username/filehash[:2]/filehash[3:6]/filehash_{0,1,2,3,4,5}.jpg
+    return url
 
 
 
@@ -68,16 +82,12 @@ def next_file_path(path_pattern: str):
 
         TODO: could we just store them all together and use symlinks? 
         would need Path.resolve
-    """
-    # if directory does not exist we need to make it
-    Path.mkdir(dir_path, parents=True, exist_ok=True)
-
-    
-    # assume directory exists for now (we'll make it if we have to prior to write)   
+    """    
+    # assume directory exists for now (we'll make it if we have to prior to this func)   
     i = 1
 
     # exponential search the directory  
-    while Path.exists(path_pattern % i):
+    while Path(path_pattern % i).exists():
         i = i * 2
     
     # eventually i is larger than the largest foobar_n.jpg that exists
@@ -86,7 +96,7 @@ def next_file_path(path_pattern: str):
     a,b = (i//2, i)
     while a + 1 < b: #binary search
         c = (a+b) // 2
-        a,b = (c,b) if Path.exists(path_pattern % i) else (a,c)
+        a,b = (c,b) if Path(path_pattern % i).exists else (a,c)
     
     return path_pattern % b
 
