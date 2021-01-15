@@ -28,13 +28,12 @@
             for (var i = 0, len = fileList.length; i<len; i++){
                 sendFile(fileList[i]);
             }
+            fileForm.reset();
+            fileList = [];
         });
 
         //renders files that have been added
         renderFileList = function() {
-            if(fileList.length < 1){
-                fileListDisplay.innerHTML = '<tr><td>1 </td> <td>2  </td> <td> 3</td></tr>'
-            }
             fileListDisplay.innerHTML = '';
             fileList.forEach(function(file,index){
                 var fileDisplayElement = document.createElement('tr');
@@ -55,7 +54,7 @@
             request.open("POST", '/images/upload');
             request.send(image);
 
-            // not sure how i get this out and onto my display for succes/failure but it's returning
+            // not sure how i get this out and onto my display for succes/failure but it's responding
             request.onload = function() {
                 console.log("status: " + request.status);
             };

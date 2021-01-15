@@ -40,13 +40,12 @@ class Image(Base):
     date_created = Column(DateTime,server_default = func.datetime('now')) 
     #sqllite has no now()
 
-    
+    parsed = Column(Boolean, default = False)    
     dhash64 = Column(Binary,default =bin(0))
     dhash128 = Column(LargeBinary,default = bin(0))
       
     url = Column(URLType)
     url_thumb = Column(URLType)
-
     in_bktree = Column(Boolean, default=False) # for LARGE (100k's) numbers of image search
 
 

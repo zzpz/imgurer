@@ -3,70 +3,26 @@
 {% block content %}
 
 <script>
-//https://medium.com/typecode/a-strategy-for-handling-multiple-file-uploads-using-javascript-eb00a77e15f
-//parralel streaming the files so we can just hit one endpoint
-
-  $(document).ready(function() {
-
-    var fileList = new Array();
-
-filesToUpload = document.getElementById("filesToUpload");
-
-
-filesToUpload.addEventListener('change', function(evnt){
-  fileList = [];
-  for (var i = 0; i < filesToUpload.files.length; i++){
-    fileList.push(filesToUpload.files[i]);
-  }
-}
-);
-
-var submit = document.getElementById('fileSubmit')
-
-submit.addEventListener('submit', function(evnt){
-
-  var request = new XMLHttpRequest();
-  fromData.set('image',filesToUpload);
-  request.open("files","/image")
-  request.send(formData);
-  // evnt.preventDefault();
-  // console.log("HERE");
-
-  // fileList.forEach(function (file){
-  //   sendFile(file);
-  // });
-});
-
-sendFile = function(file) {
-  var formData = new FormData();
-  var request = new XMLHttpRequest();
-
-  formData.set('image',file);
-  request.open("POST","/image");
-  request.send(formData);
-};
-
-  })
-
-
+  alert(hi, welcome);
 </script>
 
 
 
 
-  <div class="ui input">
+<div class="ui input">
+  <form action="/images/upload">
+  <input type="submit" value ="Upload">
+  </form>
+  <form action="/images/search">
+    <input type="submit" value ="Search"> 
+    </form>
+    <form action="/images/browse">
+      <input type="submit" value ="Browse"> 
+      </form>
 
-    <!-- IMPORTANT:  FORM's enctype must be "multipart/form-data" -->
-<form method="post" action="/image" enctype="multipart/form-data">
-  <input type="file" name="filesToUpload" id="filesToUpload" multiple /> 
-  <input type='submit' name='submit' id= 'fileSubmit' value='Upload'>
 
-</form>
 </div>
 
-      {% for x in y %}
-
-      {% endfor %}
   
 
 {% endblock %}

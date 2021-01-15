@@ -63,9 +63,19 @@ def get_user(users_db: Session, username: str):
         return None
 
 
-def create_image(images_db: Session, image: UploadFile):
-    ...
-
+def create_image(images_db: Session, image: schemas.ImageCreate):
+    db_image = models.Image(
+        url=image.url,
+        dhash128 = image.dhash128,
+        url_thumb = image.thumb_url,
+        )
+    try:
+        images_db.add(db_image)
+        images_db.commit()
+        images_db.refresh(db_image)
+        return db_image
+    except NoResultFound as anything_goes:
+        return None
     #pretend it is validated
     #write to temp?
     #write to db

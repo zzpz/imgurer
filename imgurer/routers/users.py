@@ -9,10 +9,17 @@ from ..schemas import Token, TokenData, UserOut, UserCreate
 # password and security
 from ..crud import get_user, verify_password, create_user
 from ..crud import SECRET_KEY,ALGORITHM,ACCESS_TOKEN_EXPIRE_MINUTES
-
+# tokens
+from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 # utility
 from datetime import datetime, timedelta
 from typing import Optional
+
+#frontend
+from fastapi.templating import Jinja2Templates
+
+
 
 router = APIRouter(
     prefix="/users",
@@ -20,10 +27,8 @@ router = APIRouter(
     #dependencies=[Depends()]
 )
 
-# tokens
-from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=router.prefix+"/token")
+templates = Jinja2Templates(directory="templates")
 
 
 def authenticate_user(users_db: Session, username: str, password:str):

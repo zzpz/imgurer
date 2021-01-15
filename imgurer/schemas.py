@@ -33,12 +33,32 @@ class UserInDB(UserBase):
 
 
 class ImageBase(BaseModel):
-    hash: Optional[str]
-    url: Optional[str]
-    tags: List[str] = []
+    pass
     #hash
     #url
     #id
     #
 
+class ImageCreate(ImageBase):
+    url: str
+    thumb_url: Optional[str] = None
+    dhash64: Optional[str] = None
+    dhash128: Optional[str] = None
+    phash: Optional[str] = None
+    parsed: bool = False    
+    in_bktree: bool = False
+    
 
+class ImageOut(ImageBase):
+    url:str
+    #??
+
+class ImageInDB(ImageBase):
+    id: int
+    url: str
+    dhash64: Optional[str] = None
+    dhash128: Optional[str] = None
+    phash: Optional[str] = None
+    parsed: bool = False    
+    in_bktree: bool = False
+    #??
