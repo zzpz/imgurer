@@ -64,9 +64,12 @@ def create_image(images_db: Session, image: UploadFile):
     #write to disk
     #update db with details
 
-def create_tages(images_db: Session):
+def get_images(images_db:Session):
     ...
-    # stub in case I can't get users working to allow me to 'add' tags to images in some way for search
+
+def create_tags(images_db: Session):
+    ...
+    # stub
 
 
      
