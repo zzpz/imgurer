@@ -52,7 +52,7 @@
             var request = new XMLHttpRequest();
 
             image.set('image',file);
-            request.open("POST", '/image');
+            request.open("POST", '/images/upload');
             request.send(image);
 
             // not sure how i get this out and onto my display for succes/failure but it's returning
