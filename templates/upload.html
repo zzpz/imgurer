@@ -5,6 +5,7 @@
 <script>
     $(document).ready(function() {
         var fileForm = document.getElementById('fileForm');
+        fileForm.reset();
         var filesToUpload = document.getElementById('filesToUpload');
         var fileSubmit = document.getElementById('fileSubmit');
         var fileListDisplay = document.getElementById('fileListDisplay');
@@ -12,11 +13,61 @@
         var fileList = [];
         var renderFileList, sendFile; //functions
 
+        // watch input, clear and push to filelist 
+        filesToUpload.addEventListener('change', function(e){
+            fileList = [];
+            for(var i = 0; i<filesToUpload.files.length; i++){
+                fileList.push(filesToUpload.files[i]);
+            }
+            renderFileList();
+        })
+
+        //prevent submission, fire an api call to upload one (unvalidated) image
         fileForm.addEventListener('submit', function(evnt){
             evnt.preventDefault();
+            for (var i = 0, len = fileList.length; i<len; i++){
+                sendFile(fileList[i]);
+            }
         });
 
+        //renders files that have been added
+        renderFileList = function() {
+            if(fileList.length < 1){
+                fileListDisplay.innerHTML = '<tr><td>1 </td> <td>2  </td> <td> 3</td></tr>'
+            }
+            fileListDisplay.innerHTML = '';
+            fileList.forEach(function(file,index){
+                var fileDisplayElement = document.createElement('tr');
+
+
+                fileDisplayElement.innerHTML = '<td>'+(index + 1) + '</td>' +
+                '<td>'+ file.name + '</td>';
+                fileListDisplay.appendChild(fileDisplayElement);
+            });
+        };
+
+        // we are trying to avoid sending arrays of files and instead firing one at a time parallel
+        sendFile = function(file) {
+            var image = new FormData();
+            var request = new XMLHttpRequest();
+
+            image.set('image',file);
+            request.open("POST", '/image');
+            request.send(image);
+
+            // not sure how i get this out and onto my display for succes/failure but it's returning
+            request.onload = function() {
+                console.log("status: " + request.status);
+            };
+        };
+
     });
+
+
+
+
+    
+
 </script>
 
 <form id ='fileForm' method="post" action="/images" enctype="multipart/form-data">
@@ -26,9 +77,18 @@
 </button>
 </form>
 
-<div class = "ui container" id='fileListDisplay'>
-
-</div>
+<br>
+    <table class= "ui celled striped table">
+        <thead>
+            <tr>
+              <th>Number</th>
+              <th>FileName</th>
+              <th> Remove?</th>
+            </tr>
+          </thead>
+          <tbody id='fileListDisplay'>
+        </tbody>
+    </table>
 
 
 {% endblock %}
