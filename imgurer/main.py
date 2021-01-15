@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, status
+from fastapi import FastAPI, Request, Depends, HTTPException, status, Depends
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from .database import SessionLocal,engine
@@ -24,8 +24,13 @@ from .routers import images
 
 models.Base.metadata.create_all(bind=engine)
 
+# APP declare 
 app = FastAPI()
-app.include_router(images.router)
+# ROUTERS 
+app.include_router(
+    images.router,
+#    dependencies=[Depends(...)] #global dependencies for that 'route'
+    )
 
 templates = Jinja2Templates(directory="templates")
 

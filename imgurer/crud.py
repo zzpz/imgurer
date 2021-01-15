@@ -57,6 +57,18 @@ def get_user(users_db: Session, username: str):
 
 def create_image(images_db: Session, image: UploadFile):
     ...
+
+    #pretend it is validated
+    #write to temp?
+    #write to db
+    #write to disk
+    #update db with details
+
+def create_tages(images_db: Session):
+    ...
+    # stub in case I can't get users working to allow me to 'add' tags to images in some way for search
+
+
      
 
 def update_user():
