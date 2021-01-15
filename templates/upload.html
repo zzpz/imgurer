@@ -1,0 +1,17 @@
+{%extends "layout.html" %}
+
+{% block content %}
+
+<script>
+
+</script>
+
+<form method="post" action="/image" enctype="multipart/form-data">
+<input type="file" name="image" id="filesToUpload" multiple /> 
+
+<button type = "submit" id = "fileSubmit" class="ui button primary">
+    submit
+</button>
+</form>
+
+{% endblock %}

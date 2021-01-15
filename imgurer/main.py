@@ -170,6 +170,12 @@ async def upload_images(images: List[UploadFile] = File(...)):
             shutil.copyfileobj(image.file,buffer)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def read_user(request: Request):
-    return templates.TemplateResponse("home.html", {"request":request})
+
+
+@app.get("/")
+async def easy_upload(request: Request):
+
+
+    return templates.TemplateResponse("upload.html",{
+        "request": request
+    })
