@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typing import List
+from ..util.images import image_save
+from ..dependencies import valid_content_length
 
 router = APIRouter()
 
@@ -11,23 +13,37 @@ import shutil #for now
 
 
 # use as endpoint for multiple images in parallel fashion for uploads
-@router.post("/image", tags=["images"], status_code=201)
+@router.post("/upload", tags=["images"], status_code=201, dependencies=[Depends(valid_content_length)])
 async def upload_image(image: UploadFile = File(...)):
     """
     Endpoint for image upload.
     """
-    destination_folder = "./NAS/"
-    with open(f"{destination_folder}desination.png","wb") as buffer:
-        shutil.copyfileobj(image.file,buffer)
+
+    # background tasks to perform:
+
+    # calculate image location
+    # save to that location
+    # create a shrinked version --> thumbnail and save
+    # calculate dhash @ 64bit
+    # calculate details and insert into database --> CRUD
+
+    # destination_folder = "./NAS/"
+    # with open(f"{destination_folder}desination.png","wb") as buffer:
+    #     shutil.copyfileobj(image.file,buffer)
+
 
     return {"filename": image.filename, "content_type":image.content_type, "file":image.file}
 
+@router.get("/similar",tags=["images","search"], status_code=400)
+def similar_images_ti(image: UploadFile=File(...)):
+    """
+        Endpoint for either uploading an image and returning its similar or selecting an image and returning its similar
+        not sure yet folks
+    """
+    return {"filename": image.filename, "content_type":image.content_type, "file":image.file}
 
-# which is better? I feel like single endpoint for a given request is best until we flood with too many users connecting?
-# good problems to have i guess
-@router.post("/images",tags=["images"])
-async def upload_images(images: List[UploadFile] = File(...)):
-    destination_folder = "./NAS/"
-    for image in images:
-        with open(f"{destination_folder}{image.filename}","wb") as buffer:
-            shutil.copyfileobj(image.file,buffer)
+    # find all image_hash in database that are "similar enough" to this image_hash
+
+#TODO: provide search of database for similar 
+
+
