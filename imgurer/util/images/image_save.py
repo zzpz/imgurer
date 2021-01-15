@@ -3,20 +3,18 @@ from typing import Optional
 from PIL import Image
 
 
-# a dependency
-def get_nas():
-    return "NAS"
 
 
 def ensure_dir(dir_path: str):
     """
-        If directory does not exist we need to make it
+        If directory does not exist we need to make it,
+        can't async or race condition on file create
     """
     path = Path(dir_path)
     Path.mkdir(path, parents=True, exist_ok=True)     #fails silently
 
 
-def userhash(username:str):
+async def userhash(username:str):
     """
         simplistic way to bucket usernames so they don't all wind up in A/aardvark,apple,antelope
         not sure of the implications for on disk / cache misses for reading / etc
@@ -27,7 +25,7 @@ def userhash(username:str):
     simple_hash = username[:3]
     return simple_hash
 
-def filehash(filename:str)->str:
+async def bad_fname_hash(filename:str)->str:
     """
         non cryptographic hash to bucket files
     """
@@ -63,9 +61,6 @@ def calc_item_url(filehash: str, nas: str,username:Optional[str] = None)->str:
 
     url = next_file_path(path_pattern)
 
-    #calculate image url pattern
-        # pattern:
-        # userhash[:3]/username/filehash[:3]/filehash[3:6]/filehash_{0,1,2,3,4,5}.jpg
 
     # perform search for that url existing 
         # next_file_path(path_pattern)
@@ -126,6 +121,7 @@ def shrink_and_greyscale(image_url:str,hash_size:int = 8)->Image:
     image = image.convert('L').resize((hash_size + 1, hash_size+1), Image.ANTIALIAS, )
     return image
 
+#could just pip install dhash but I wanted to learn it first
 def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:bool = True)->(int,int):
     """
         # Hash_size must be same as shrink_and_greyscale do not call one without the other?
