@@ -3,15 +3,32 @@
 {% block content %}
 
 <script>
+    $(document).ready(function() {
+        var fileForm = document.getElementById('fileForm');
+        var filesToUpload = document.getElementById('filesToUpload');
+        var fileSubmit = document.getElementById('fileSubmit');
+        var fileListDisplay = document.getElementById('fileListDisplay');
 
+        var fileList = [];
+        var renderFileList, sendFile; //functions
+
+        fileForm.addEventListener('submit', function(evnt){
+            evnt.preventDefault();
+        });
+
+    });
 </script>
 
-<form method="post" action="/image" enctype="multipart/form-data">
-<input type="file" name="image" id="filesToUpload" multiple /> 
-
+<form id ='fileForm' method="post" action="/images" enctype="multipart/form-data">
+<input type="file" name="images" id="filesToUpload" multiple /> 
 <button type = "submit" id = "fileSubmit" class="ui button primary">
     submit
 </button>
 </form>
+
+<div class = "ui container" id='fileListDisplay'>
+
+</div>
+
 
 {% endblock %}
