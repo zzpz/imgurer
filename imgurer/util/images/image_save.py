@@ -86,7 +86,7 @@ def calc_item_url(filehash: str, nas: str,username:Optional[str] = None)->str:
     return url
 
 
-def next_file_path(path_pattern: str):
+def next_file_path(path_pattern: str)->str:
     """
         Finds the next free filepath in sequentially named list of files
 
@@ -126,7 +126,7 @@ def shrink_and_greyscale(image_url:str,hash_size:int = 8)->Image:
     image = image.convert('L').resize((hash_size + 1, hash_size+1), Image.ANTIALIAS, )
     return image
 
-def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:bool = True):
+def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:bool = True)->(int,int):
     """
         # Hash_size must be same as shrink_and_greyscale do not call one without the other?
         http://www.hackerfactor.com/blog/?/archives/529-Kind-of-Like-That.html
@@ -175,13 +175,12 @@ def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:b
     #close image now we're done with it? no. close outside of function and do everything we want with it first
 
     return (row_hash,col_hash) #lets us use either or or concat later or compare separate
+       
 
-        
-
-def get_num_bits_different(hash1, hash2):
+def get_num_bits_different(hash1, hash2)->int:
     """
     https://github.com/benhoyt/dhash/blob/master/dhash.py
-    Calculate number of bits different between two hashes.
+    Calculate number of bits different between two hashes
     >>> get_num_bits_different(0x4bd1, 0x4bd1)
     0
     >>> get_num_bits_different(0x4bd1, 0x5bd2)

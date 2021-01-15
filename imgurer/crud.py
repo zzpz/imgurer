@@ -14,6 +14,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 #images
 from fastapi import UploadFile
+from pybktree import BKTree, hamming_distance
 
 #password
 from passlib.context import CryptContext
@@ -70,9 +71,6 @@ def get_images(images_db:Session):
 def create_tags(images_db: Session):
     ...
     # stub
-
-
-     
 
 def update_user():
     pass
