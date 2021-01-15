@@ -13,9 +13,6 @@ from . import crud, schemas, models
 # Front end
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-
-
-
 # routing
 from .routers import images, users
 
@@ -33,8 +30,9 @@ app.include_router(
 
 templates = Jinja2Templates(directory="templates")
 
+
 @app.get("/")
 async def root(request: Request):
-    return templates.TemplateResponse("upload.html",{
+    return templates.TemplateResponse("home.html",{
         "request": request
     })

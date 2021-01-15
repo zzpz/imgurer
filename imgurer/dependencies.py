@@ -9,9 +9,10 @@ async def valid_content_length(content_length: int = Header(..., lt=12_000)):
 
 # a dependency
 async def get_nas():
-    return "NAS"
+    nas = "NAS"
+    yield nas
 
-def get_user_db():
+async def get_user_db():
     """
         
     """
@@ -21,7 +22,7 @@ def get_user_db():
     finally:
         db.close()
 
-def get_images_db():
+async def get_images_db():
     """
 
     """
@@ -30,3 +31,7 @@ def get_images_db():
         yield db
     finally:
         db.close()
+
+def get_thumbs_nas():
+    nas = "thumbnails"
+    yield nas

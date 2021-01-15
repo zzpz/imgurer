@@ -1,20 +1,11 @@
 from pathlib import Path
 from typing import Optional
 from PIL import Image
+from ..schemas import ImageCreate
 
 
 
-
-def ensure_dir(dir_path: str):
-    """
-        If directory does not exist we need to make it,
-        can't async or race condition on file create
-    """
-    path = Path(dir_path)
-    Path.mkdir(path, parents=True, exist_ok=True)     #fails silently
-
-
-async def userhash(username:str):
+def userhash(username:str):
     """
         simplistic way to bucket usernames so they don't all wind up in A/aardvark,apple,antelope
         not sure of the implications for on disk / cache misses for reading / etc
@@ -25,7 +16,7 @@ async def userhash(username:str):
     simple_hash = username[:3]
     return simple_hash
 
-async def bad_fname_hash(filename:str)->str:
+def bad_fname_hash(filename:str)->str:
     """
         non cryptographic hash to bucket files
     """
@@ -33,9 +24,7 @@ async def bad_fname_hash(filename:str)->str:
     pos = 0
     for c in filename:
         pos += ord(c)
-        print(pos)
     return f"{hash[pos%26]}{hash[pos%19%26]}{hash[pos%7%26]}{hash[pos%13%26]}{hash[pos%23%26]}{hash[pos%27%26]}"
-
 
 def calc_item_url(filehash: str, nas: str,username:Optional[str] = None)->str:
     """
@@ -80,6 +69,13 @@ def calc_item_url(filehash: str, nas: str,username:Optional[str] = None)->str:
 
     return url
 
+def ensure_dir(dir_path: str):
+    """
+        If directory does not exist we need to make it,
+        can't async or race condition on file create
+    """
+    path = Path(dir_path)
+    Path.mkdir(path, parents=True, exist_ok=True)     #fails silently
 
 def next_file_path(path_pattern: str)->str:
     """
@@ -91,7 +87,6 @@ def next_file_path(path_pattern: str)->str:
         abc/username/abc/def/foobar_2.jpg
         abc/username/abc/def/foobar_3.jpg
 
-        uses exponential search 
         exponential search - https://en.wikipedia.org/wiki/Exponential_search
 
         TODO: could we just store them all together and use symlinks? 
@@ -103,23 +98,16 @@ def next_file_path(path_pattern: str)->str:
     # exponential search the directory  
     while Path(path_pattern % i).exists():
         i = i * 2
-    
+
     # eventually i is larger than the largest foobar_n.jpg that exists
     # this gives us an interval between the 'last' i (i/2) and the 'current' i (i)
     # it is an interval (a..b] that can be searched using binary search (ordered list)
     a,b = (i//2, i)
-    while a + 1 < b: #binary search
+    while a + 1 < b: #binary search backwards
         c = (a+b) // 2
-        a,b = (c,b) if Path(path_pattern % i).exists else (a,c)
-    
+        a,b = (c,b) if Path(path_pattern % c).exists() else (a,c)
     return path_pattern % b
 
-
-def shrink_and_greyscale(image_url:str,hash_size:int = 8)->Image:
-    # assume that the provided url will be an image location
-    image = Image.open(image_url)
-    image = image.convert('L').resize((hash_size + 1, hash_size+1), Image.ANTIALIAS, )
-    return image
 
 #could just pip install dhash but I wanted to learn it first
 def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:bool = True)->(int,int):
@@ -172,7 +160,6 @@ def difference_hash_n_bits(image:Image,hash_size: int = 8,row:bool = True, col:b
 
     return (row_hash,col_hash) #lets us use either or or concat later or compare separate
        
-
 def get_num_bits_different(hash1, hash2)->int:
     """
     https://github.com/benhoyt/dhash/blob/master/dhash.py
@@ -185,3 +172,58 @@ def get_num_bits_different(hash1, hash2)->int:
     16
     """
     return bin(hash1 ^ hash2).count('1') 
+
+
+
+
+
+def shrink_and_greyscale(image_url:str,hash_size:int = 8)->Image:
+    # assume that the provided url will be an image location
+    # could be saved then picked up separately in batches
+    image = Image.open(image_url)
+    image = image.convert('L').resize((hash_size + 1, hash_size+1), Image.ANTIALIAS, )
+    return image
+
+def make_thumbnail(image_url:str):
+    """
+        Makes a thumbnail of the target url
+    """
+    MAX_SIZE = (100,100)
+
+    thumb_path :str = ''
+    #better
+    with Path(image_url) as p:
+        with Image.open(p) as img:
+            img.thumbnail(MAX_SIZE)
+            img = img.convert('RGB')
+            p = 'NAS/thumbs/' / p.relative_to('NAS/nouser/')
+            thumb_path = p
+            ensure_dir(p.parent)
+            img.save(thumb_path)
+    return str(thumb_path)
+
+def parse_image(image_url:str)->ImageCreate:
+    """
+    helper function to call a number of image processing functions
+    """
+
+    # this is probably a better option?
+        # as it closes file and contains it all in this context
+    # with Image.open(Path(image_url)) as img:
+
+    thumb_url = make_thumbnail(image_url)
+    img = shrink_and_greyscale(image_url)
+    row_hash,col_hash = difference_hash_n_bits(img)
+    dhash128 = ((row_hash<<32) | col_hash) #concat together
+
+    img_create = ImageCreate(url=image_url, thumb_url =thumb_url, dhash128=dhash128)
+    return img_create
+
+
+
+
+
+
+
+
+
