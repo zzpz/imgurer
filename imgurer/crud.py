@@ -20,6 +20,13 @@ from pybktree import BKTree, hamming_distance
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# to get a string like this run:
+# openssl rand -hex 32
+#TODO:replace with environment variables
+SECRET_KEY = "1a6fb4e63cca869677e4ca79e254ab1d56490894c8844d7838a40daf9cbe2988" 
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 
 
 

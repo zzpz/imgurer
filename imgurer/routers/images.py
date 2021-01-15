@@ -1,31 +1,48 @@
 from fastapi import APIRouter, Depends
 from typing import List
-from ..util.images import image_save
-from ..dependencies import valid_content_length
+
+# db
+from sqlalchemy.orm import Session
+
+from ..util.images.image_save import calc_item_url,bad_fname_hash
+from ..dependencies import valid_content_length, get_nas, get_images_db
 
 router = APIRouter(
     prefix="/images",
-    tags=["images"]
+    tags=["images"],
+    #dependencies=[Depends()]
 )
 
 
 # files (images + form data)
 from fastapi import File, UploadFile, Form
-import shutil #for now
+import shutil
 
 
 
 # use as endpoint for multiple images in parallel fashion for uploads
 @router.post("/upload", status_code=201)
-async def upload_image(image: UploadFile = File(...)):
+async def upload_image(
+    image: UploadFile = File(...),
+    nas:str = Depends(get_nas),
+    images_db:Session = Depends(get_images_db)):
     """
-    Endpoint for image upload.
+    Endpoint for image upload. 
+
+    - Multi image upload performed by frontend iterating calls to this endpoint.
     """
 
     # background tasks to perform:
 
     # calculate image location
-    # save to that location
+    url = calc_item_url(filehash=bad_fname_hash(image.filename),nas=nas) 
+    # save to that location because we're going to ASSUME its safe (its not)
+
+    with open(f"{url}","wb") as buffer:
+        shutil.copyfileobj(image.file,buffer)
+
+
+
     # create a shrinked version --> thumbnail and save
     # calculate dhash @ 64bit
     # calculate details and insert into database --> CRUD
@@ -48,5 +65,3 @@ def similar_images_ti(image: UploadFile=File(...)):
     # find all image_hash in database that are "similar enough" to this image_hash
 
 #TODO: provide search of database for similar 
-
-
