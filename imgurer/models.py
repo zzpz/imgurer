@@ -45,7 +45,8 @@ class Image(Base):
     dhash64 = Column(String) #TODO : binary
     dhash128 = Column(String)
     phash = Column(String)
-      
+
+    filename = Column(String)   
     url = Column(String, default = '')
     url_thumb = Column(String, default = '')
     in_bktree = Column(Boolean, default=False) # for LARGE (100k's) numbers of image search

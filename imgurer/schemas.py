@@ -41,6 +41,7 @@ class ImageBase(BaseModel):
 
 class ImageCreate(ImageBase):
     url: str
+    filename: str 
     thumb_url: Optional[str] = None
     dhash64: Optional[str] = None
     dhash128: Optional[str] = None
@@ -56,6 +57,7 @@ class ImageOut(ImageBase):
 class ImageInDB(ImageBase):
     id: int
     url: str
+    filename: str
     dhash64: Optional[str] = None
     dhash128: Optional[str] = None
     phash: Optional[str] = None
