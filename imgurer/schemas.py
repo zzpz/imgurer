@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
 import datetime
 
@@ -52,7 +52,11 @@ class ImageCreate(ImageBase):
 
 class ImageOut(ImageBase):
     url:str
+    id: int
     #??
+
+class MultiImageOut(ImageBase):
+    images: List[Dict] # ID:url, ID:url
 
 class ImageInDB(ImageBase):
     id: int

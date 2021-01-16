@@ -269,7 +269,7 @@ class SingletonSearchTree():
             wrapper to get and add to tree for a given image maintaining its id as reference in tree
             - distance is default 8
         """
-        bkt: pybktree.BKTree = self.tree
+        bkt = self.tree
         bkt.add(self.TreeImage(bits,id))
         self.items +=1
 
@@ -278,11 +278,16 @@ class SingletonSearchTree():
             wrapper to get and search tree for 'similar' images
             - distance is default 8
         """
-        bkt: pybktree.BKTree = self.tree
+        bkt = self.tree
         found = bkt.find(self.TreeImage(bits,id),distance)
+        ids = []
+        for tup in found:
+            #(distance, TreeImage(bits, id))
+            if tup[1].id in ids:
+                continue
+            ids.append(tup[1].id)
         
-        print(f"found: {found}")
-        return(found)
+        return(ids)
     
     def rebuild(self,ImageBKTPopulate_array:[]):
         self.tree = pybktree.BKTree

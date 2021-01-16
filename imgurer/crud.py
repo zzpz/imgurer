@@ -3,6 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 
 #utility
 from datetime import datetime, timedelta
+import random
 from typing import Optional,List
 
 #SQL
@@ -12,7 +13,7 @@ from .database import SessionLocal, engine #singular database for users and imag
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.strategy_options import load_only
-
+from sqlalchemy import func
 #images
 from fastapi import UploadFile
 
@@ -108,10 +109,43 @@ def get_bkt_reload_images(images_db:Session):
 
     return bkt_id_dhash128
 
+def browse_images(images_db:Session)->schemas.MultiImageOut:
+    """
+        Here, have up to 20 random images from the database
+    """
+    number = images_db.query(func.count(models.Image.id)).scalar()
+    randoms = random.sample(range(1,number+1),min(20,number))
+    
+    images_in_db = images_db.query(models.Image).filter(models.Image.id.in_(randoms)).all()
+
+    images_out = []
+    for image in images_in_db:
+        d = {image.id:{"url":image.url,"thumb_url":image.url_thumb}}
+        images_out.append(d)
+
+    images = schemas.MultiImageOut(images= images_out)
+    return images
+
+def get_images(images_db:Session, ids:[int])->schemas.MultiImageOut:
+    """
+        should be optional ints provided
+    """
+    try:
+        images_in_db = images_db.query(models.Image).filter(models.Image.id.in_(ids)).all()
+        if not images_in_db: #not catching an exception here
+            return None
+        images_out = []
+        for image in images_in_db:
+            d = {image.id:{"url":image.url,"thumb_url":image.url_thumb}}
+            images_out.append(d)
+
+        images = schemas.MultiImageOut(images= images_out)
+        return images
+    except NoResultFound as not_found:
+        return None
+    
 
 
-def get_images(images_db:Session):
-    ...
 
 def create_tags(images_db: Session):
     ...

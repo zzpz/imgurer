@@ -4,10 +4,10 @@ from typing import List, Optional
 # files (images + form data)
 from fastapi import File, UploadFile, Form
 from ..util.image_save import calc_item_url, bad_fname_hash,parse_image,SingletonSearchTree
-from ..schemas import ImageCreate,ImageOut
+from ..schemas import ImageCreate,ImageOut,MultiImageOut
 # db
 from sqlalchemy.orm import Session
-from ..crud import create_image, get_image, get_bkt_reload_images
+from ..crud import create_image, get_image, get_bkt_reload_images, get_images, browse_images
 # disk
 import shutil
 # dependency
@@ -70,11 +70,11 @@ async def upload_image(
 
     return {"filename": db_image.filename, "content_type":image.content_type, "file":image.file}
 
-@router.get("/similar",tags=["search"], status_code=400)
+@router.post("/similar",tags=["search"], status_code=200, response_model=MultiImageOut)
 async def similar_images_to(image_id:int,db:Session = Depends(get_images_db)):
     """
-        Endpoint for either uploading an image and returning its similar or selecting an image and returning its similar
-        not sure yet folks
+        Endpoint for and image id 
+        - returning its similar images' ID and urls 
     """
     db_image = get_image(images_db = db, id= image_id)
     if not db_image:
@@ -84,23 +84,26 @@ async def similar_images_to(image_id:int,db:Session = Depends(get_images_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     SST = SingletonSearchTree.get_instance()
-    similar = SST.search_bkTree(bits=int(db_image.dhash128),id=db_image.id)
-    print(sorted(similar))
+    fastfilter: [int] = SST.search_bkTree(bits=int(db_image.dhash128),id=db_image.id)
+    #similar will always return at least 1 id (the file itself if it exists)
 
-    return {"OK":1}
+    similar_imgs = get_images(images_db= db, ids = fastfilter)
+    #here we could filter further using a more accurate similarity function
+    
+    return similar_imgs
 
-    # find all image_hash in database that are "similar enough" to this image_hash
 
-#TODO: provide search of database for similar 
 
-@router.get("/")
-async def root(request: Request):
-    return templates.TemplateResponse("home.html",{ #TODO: staticfiles
-        "request": request
-    })
-
-@router.get("/rebuildBKT", tags=["search"],dependencies=[Depends(get_current_user)],status_code=200)
+@router.get("/rebuildBKT", tags=["search, development"],status_code=200)
 def rebuild_BKT(db:Session = Depends(get_images_db)):
+    """
+        # this is for development because of some design decisions
+        We have issues because our search tree is stored in the server process's scope
+        - it wipes the poor guy once we make any change to a file while developing
+        - I don't know how to get the server to call an 'on startup do this' function or where i'd put it atm
+        - So there's this bandaid for now 
+        
+    """
     SST = SingletonSearchTree.get_instance()
     images_to_load = get_bkt_reload_images(db)
     for image in images_to_load:
@@ -120,7 +123,7 @@ async def read_search(request: Request):
     """
     i'm not up for building a front end
     """
-    return templates.TemplateResponse("upload.html",{ #TODO: staticfiles
+    return templates.TemplateResponse("search.html",{ #TODO: staticfiles
         "request": request
     })
 
@@ -129,6 +132,18 @@ async def read_search(request: Request):
     """
     i'm not up for building a front end
     """
-    return templates.TemplateResponse("upload.html",{ #TODO: staticfiles
+    return templates.TemplateResponse("browse.html",{ #TODO: staticfiles
+        "request": request
+    })
+
+@router.get("/browsing",status_code=200,response_model=MultiImageOut)
+async def browse(db:Session = Depends(get_images_db)):
+    images_to_browse = browse_images(images_db=db)
+
+    return images_to_browse
+
+@router.get("/")
+async def root(request: Request):
+    return templates.TemplateResponse("home.html",{ #TODO: staticfiles
         "request": request
     })
