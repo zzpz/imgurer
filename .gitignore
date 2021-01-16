@@ -1,5 +1,10 @@
 #sqllite
 .db
+#images
+*.jpg
+#vscode
+.vscode/settings.json
+
 
 # PYTHON
 # Byte-compiled / optimized / DLL files
@@ -75,4 +80,3 @@ env.bak/
 venv.bak/
 img
 imgurer.db
-*.jpg
