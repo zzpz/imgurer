@@ -118,9 +118,11 @@ def browse_images(images_db:Session)->schemas.MultiImageOut:
     
     images_in_db = images_db.query(models.Image).filter(models.Image.id.in_(randoms)).all()
 
+    if not images_in_db: #not catching an exception here
+        return None
     images_out = []
     for image in images_in_db:
-        d = {image.id:{"url":image.url,"thumb_url":image.url_thumb}}
+        d = {"id":image.id, "url":image.url,"thumb_url":image.url_thumb}
         images_out.append(d)
 
     images = schemas.MultiImageOut(images= images_out)
@@ -136,7 +138,7 @@ def get_images(images_db:Session, ids:[int])->schemas.MultiImageOut:
             return None
         images_out = []
         for image in images_in_db:
-            d = {image.id:{"url":image.url,"thumb_url":image.url_thumb}}
+            d = {"id":image.id, "url":image.url,"thumb_url":image.url_thumb}
             images_out.append(d)
 
         images = schemas.MultiImageOut(images= images_out)

@@ -56,7 +56,7 @@ class ImageOut(ImageBase):
     #??
 
 class MultiImageOut(ImageBase):
-    images: List[Dict] # ID:url, ID:url
+    images: List # ID:url, ID:url
 
 class ImageInDB(ImageBase):
     id: int
