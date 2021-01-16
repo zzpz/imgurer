@@ -64,3 +64,7 @@ class ImageInDB(ImageBase):
     parsed: Optional[bool] = False    
     in_bktree: Optional[bool] = False
     #??
+
+class ImageBKTPopulate(ImageBase):
+    id : int
+    dhash128: str

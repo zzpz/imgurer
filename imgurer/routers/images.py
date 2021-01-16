@@ -7,15 +7,17 @@ from ..util.image_save import calc_item_url, bad_fname_hash,parse_image,Singleto
 from ..schemas import ImageCreate,ImageOut
 # db
 from sqlalchemy.orm import Session
-from ..crud import create_image, get_image
+from ..crud import create_image, get_image, get_bkt_reload_images
 # disk
 import shutil
 # dependency
 from ..dependencies import valid_content_length, get_nas, get_images_db, get_thumbs_nas
+from .users import get_current_user
 # Front end
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.exceptions import HTTPException
+
 
 router = APIRouter(
     prefix="/images",
@@ -74,17 +76,16 @@ async def similar_images_to(image_id:int,db:Session = Depends(get_images_db)):
         Endpoint for either uploading an image and returning its similar or selecting an image and returning its similar
         not sure yet folks
     """
-    print(image_id)
     db_image = get_image(images_db = db, id= image_id)
     if not db_image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Could not find image",
             headers={"WWW-Authenticate": "Bearer"},
-        )        
+        )
     SST = SingletonSearchTree.get_instance()
-    print(sorted(SST.tree))
     similar = SST.search_bkTree(bits=int(db_image.dhash128),id=db_image.id)
+    print(sorted(similar))
 
     return {"OK":1}
 
@@ -98,6 +99,13 @@ async def root(request: Request):
         "request": request
     })
 
+@router.get("/rebuildBKT", tags=["search"],dependencies=[Depends(get_current_user)],status_code=200)
+def rebuild_BKT(db:Session = Depends(get_images_db)):
+    SST = SingletonSearchTree.get_instance()
+    images_to_load = get_bkt_reload_images(db)
+    for image in images_to_load:
+        SST.update_bkTree(int(image.dhash128),image.id)
+    
 @router.get("/upload")
 async def read_upload(request: Request):
     """

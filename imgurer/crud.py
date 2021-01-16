@@ -11,6 +11,7 @@ from . import models, schemas #TokenData
 from .database import SessionLocal, engine #singular database for users and images
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.strategy_options import load_only
 
 #images
 from fastapi import UploadFile
@@ -79,15 +80,13 @@ def create_image(images_db: Session, image: schemas.ImageCreate):
     images_db.commit()
     images_db.refresh(db_image)
     return db_image
-    #pretend it is validated
-    #write to temp?
-    #write to db
-    #write to disk
-    #update db with details
+
 
 def get_image(images_db:Session, id:int)->schemas.ImageInDB:
     try:
         img = images_db.query(models.Image).filter(models.Image.id==id).first()
+        if not img: #not catching an exception here
+            return None
         image_inDB = schemas.ImageInDB(
             id=img.id,
             url=img.url,
@@ -95,9 +94,19 @@ def get_image(images_db:Session, id:int)->schemas.ImageInDB:
             dhash128=img.dhash128
         )
         return image_inDB
-    except NoResultFound as not_found:
+    except NoResultFound as not_found: #doesn't catch empty db?
         return None
 
+def get_bkt_reload_images(images_db:Session):
+    """
+        this seems like a hazardous query
+    """
+    all_images = images_db.query(models.Image).all()
+    bkt_id_dhash128 = []
+    for image in all_images:
+        bkt_id_dhash128.append(schemas.ImageBKTPopulate(id=image.id, dhash128=image.dhash128))
+
+    return bkt_id_dhash128
 
 
 

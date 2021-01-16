@@ -228,6 +228,7 @@ def parse_image(image_url:str, filename:str)->ImageCreate:
 
 
 
+
     
 
 class SingletonSearchTree():
@@ -239,7 +240,7 @@ class SingletonSearchTree():
     
     def item_distance(x:TreeImage,y:TreeImage):
         return pybktree.hamming_distance(x.bits, y.bits)
-    
+    items=0
     tree=pybktree.BKTree(item_distance)
 
 
@@ -270,6 +271,7 @@ class SingletonSearchTree():
         """
         bkt: pybktree.BKTree = self.tree
         bkt.add(self.TreeImage(bits,id))
+        self.items +=1
 
     def search_bkTree(self,bits:int, distance:int = 8, id : Optional[int] = None):
         """
@@ -278,9 +280,16 @@ class SingletonSearchTree():
         """
         bkt: pybktree.BKTree = self.tree
         found = bkt.find(self.TreeImage(bits,id),distance)
-        print(found)
+        
+        print(f"found: {found}")
         return(found)
-
+    
+    def rebuild(self,ImageBKTPopulate_array:[]):
+        self.tree = pybktree.BKTree
+        self.items = 0
+        for btkpop in ImageBKTPopulate_array:
+            self.update_bkTree((btkpop.dhash128, btkpop.id))
+    
 
 
 

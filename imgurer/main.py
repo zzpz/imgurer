@@ -17,7 +17,6 @@ from fastapi.responses import HTMLResponse
 from .routers import images, users
 
 models.Base.metadata.create_all(bind=engine)
-
 # APP declare 
 app = FastAPI()
 # ROUTERS 
