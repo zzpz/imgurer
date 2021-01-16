@@ -42,11 +42,11 @@ class Image(Base):
     #sqllite has no now()
 
     parsed = Column(Boolean, default = False)    
-    dhash64 = Column(String) #TODO : binary
-    dhash128 = Column(String)
-    phash = Column(String)
+    dhash64 = Column(String, default = '') #TODO : binary
+    dhash128 = Column(String, default ='')
+    phash = Column(String, default ='')
 
-    filename = Column(String)   
+    filename = Column(String, default ='')   
     url = Column(String, default = '')
     url_thumb = Column(String, default = '')
     in_bktree = Column(Boolean, default=False) # for LARGE (100k's) numbers of image search

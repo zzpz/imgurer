@@ -63,6 +63,9 @@ def get_user(users_db: Session, username: str):
 
 
 def create_image(images_db: Session, image: schemas.ImageCreate):
+    """
+        connect to provided database Session, create image in db
+    """
     db_image = models.Image(
         parsed = False,
         dhash64 = None,
@@ -70,6 +73,7 @@ def create_image(images_db: Session, image: schemas.ImageCreate):
         dhash128 = image.dhash128,
         url=image.url,
         url_thumb = image.thumb_url,
+        filename = image.filename
         )
     images_db.add(db_image)
     images_db.commit()
@@ -80,6 +84,22 @@ def create_image(images_db: Session, image: schemas.ImageCreate):
     #write to db
     #write to disk
     #update db with details
+
+def get_image(images_db:Session, id:int)->schemas.ImageInDB:
+    try:
+        img = images_db.query(models.Image).filter(models.Image.id==id).first()
+        image_inDB = schemas.ImageInDB(
+            id=img.id,
+            url=img.url,
+            filename=img.filename,
+            dhash128=img.dhash128
+        )
+        return image_inDB
+    except NoResultFound as not_found:
+        return None
+
+
+
 
 def get_images(images_db:Session):
     ...

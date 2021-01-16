@@ -203,7 +203,7 @@ def make_thumbnail(image_url:str):
             img.save(thumb_path)
     return str(thumb_path)
 
-def parse_image(image_url:str)->ImageCreate:
+def parse_image(image_url:str, filename:str)->ImageCreate:
     """
     helper function to call a number of image processing functions
     """
@@ -216,12 +216,14 @@ def parse_image(image_url:str)->ImageCreate:
     img = shrink_and_greyscale(image_url)
     row_hash,col_hash = difference_hash_n_bits(img)
     dhash128 = ((row_hash<<32) | col_hash) #concat together
+ 
 
-
-
-    
-
-    img_create = ImageCreate(url=image_url, thumb_url =thumb_url, dhash128=dhash128)
+    img_create = ImageCreate(
+        filename = filename,
+        url=image_url,
+        thumb_url=thumb_url,
+        dhash128=dhash128
+        )
     return img_create
 
 
@@ -234,8 +236,10 @@ class SingletonSearchTree():
     """
     __instance__ = None
     TreeImage = collections.namedtuple('TreeImage','bits id')
+    
     def item_distance(x:TreeImage,y:TreeImage):
         return pybktree.hamming_distance(x.bits, y.bits)
+    
     tree=pybktree.BKTree(item_distance)
 
 
@@ -253,22 +257,29 @@ class SingletonSearchTree():
     @staticmethod
     def get_instance():
         """
-        static method to fetch
+        static method to fetch instance
         """
         if not SingletonSearchTree.__instance__:
             SingletonSearchTree()
         return SingletonSearchTree.__instance__
 
     def update_bkTree(self,bits:int, id:int):
-        TreeImage = collections.namedtuple('TreeImage','bits id')
+        """
+            wrapper to get and add to tree for a given image maintaining its id as reference in tree
+            - distance is default 8
+        """
         bkt: pybktree.BKTree = self.tree
-        bkt.add(TreeImage(bits,id))
+        bkt.add(self.TreeImage(bits,id))
 
-    @staticmethod
-    def search_bkTree(bits:int, distance:int, id : Optional[int] = None):
-        bkt: pybktree.BKTree = SingletonSearchTree().get_instance().tree
-        found = bkt.find(TreeImage(bits,id),distance)
+    def search_bkTree(self,bits:int, distance:int = 8, id : Optional[int] = None):
+        """
+            wrapper to get and search tree for 'similar' images
+            - distance is default 8
+        """
+        bkt: pybktree.BKTree = self.tree
+        found = bkt.find(self.TreeImage(bits,id),distance)
         print(found)
+        return(found)
 
 
 

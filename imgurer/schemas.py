@@ -61,6 +61,6 @@ class ImageInDB(ImageBase):
     dhash64: Optional[str] = None
     dhash128: Optional[str] = None
     phash: Optional[str] = None
-    parsed: bool = False    
-    in_bktree: bool = False
+    parsed: Optional[bool] = False    
+    in_bktree: Optional[bool] = False
     #??
