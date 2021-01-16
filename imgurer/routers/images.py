@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from typing import List, Optional
 # files (images + form data)
 from fastapi import File, UploadFile, Form
-from ..util.image_save import calc_item_url, bad_fname_hash,parse_image
+from ..util.image_save import calc_item_url, bad_fname_hash,parse_image,SingletonSearchTree
 from ..schemas import ImageCreate,ImageOut
 # db
 from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 # use as endpoint for multiple images in parallel fashion for uploads
-@router.post("/upload", status_code=201,response_model=ImageOut)
+@router.post("/upload", status_code=201)
 async def upload_image(
     image: UploadFile = File(...),
     nas:str = Depends(get_nas),
@@ -53,10 +53,15 @@ async def upload_image(
         shutil.copyfileobj(image.file,buffer)
 
     # pass off to a worker queue and have another process handle it from here?
-    create_image(images_db,parse_image(url))
+    db_image = create_image(images_db,parse_image(url))
         # create a shrinked version --> thumbnail and save
         # calculate dhash @ 64bit
         # calculate details and insert into database --> CRUD
+    
+    # insert into bkTree with id as stored details?
+    SST = SingletonSearchTree.get_instance()
+    SST.update_bkTree(bits=int(db_image.dhash128),id=db_image.id)
+
 
     return {"filename": image.filename, "content_type":image.content_type, "file":image.file}
 

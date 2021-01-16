@@ -14,7 +14,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 #images
 from fastapi import UploadFile
-from pybktree import BKTree, hamming_distance
 
 #password
 from passlib.context import CryptContext
@@ -65,17 +64,17 @@ def get_user(users_db: Session, username: str):
 
 def create_image(images_db: Session, image: schemas.ImageCreate):
     db_image = models.Image(
-        url=image.url,
+        parsed = False,
+        dhash64 = None,
+        phash = None,
         dhash128 = image.dhash128,
+        url=image.url,
         url_thumb = image.thumb_url,
         )
-    try:
-        images_db.add(db_image)
-        images_db.commit()
-        images_db.refresh(db_image)
-        return db_image
-    except NoResultFound as anything_goes:
-        return None
+    images_db.add(db_image)
+    images_db.commit()
+    images_db.refresh(db_image)
+    return db_image
     #pretend it is validated
     #write to temp?
     #write to db

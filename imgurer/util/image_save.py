@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Optional
 from PIL import Image
 from ..schemas import ImageCreate
-
+import pybktree
+import collections
 
 
 def userhash(username:str):
@@ -216,11 +217,58 @@ def parse_image(image_url:str)->ImageCreate:
     row_hash,col_hash = difference_hash_n_bits(img)
     dhash128 = ((row_hash<<32) | col_hash) #concat together
 
+
+
+    
+
     img_create = ImageCreate(url=image_url, thumb_url =thumb_url, dhash128=dhash128)
     return img_create
 
 
 
+    
+
+class SingletonSearchTree():
+    """
+        singleton class to store all of our images. seems like a poor design decision.
+    """
+    __instance__ = None
+    TreeImage = collections.namedtuple('TreeImage','bits id')
+    def item_distance(x:TreeImage,y:TreeImage):
+        return pybktree.hamming_distance(x.bits, y.bits)
+    tree=pybktree.BKTree(item_distance)
+
+
+    def __init__(self):
+        """
+        Constructor
+        """
+        if SingletonSearchTree.__instance__ is None:
+            SingletonSearchTree.__instance__ = self
+        else:
+            raise Exception("Singleton --> use SingletonSearchTree.get_instance()")
+
+
+    
+    @staticmethod
+    def get_instance():
+        """
+        static method to fetch
+        """
+        if not SingletonSearchTree.__instance__:
+            SingletonSearchTree()
+        return SingletonSearchTree.__instance__
+
+    def update_bkTree(self,bits:int, id:int):
+        TreeImage = collections.namedtuple('TreeImage','bits id')
+        bkt: pybktree.BKTree = self.tree
+        bkt.add(TreeImage(bits,id))
+
+    @staticmethod
+    def search_bkTree(bits:int, distance:int, id : Optional[int] = None):
+        bkt: pybktree.BKTree = SingletonSearchTree().get_instance().tree
+        found = bkt.find(TreeImage(bits,id),distance)
+        print(found)
 
 
 

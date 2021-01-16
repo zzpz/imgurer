@@ -5,8 +5,9 @@ from sqlalchemy.orm import relationship
 
 from .database import Base
 
+#TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
+from .database import DB_PROVIDER 
 
-from .database import DB_PROVIDER #TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
 
 # many to many images:tags
 # images_tags_association = Table('image_tags', Base.metadata,
@@ -41,11 +42,12 @@ class Image(Base):
     #sqllite has no now()
 
     parsed = Column(Boolean, default = False)    
-    dhash64 = Column(Binary,default =bin(0))
-    dhash128 = Column(LargeBinary,default = bin(0))
+    dhash64 = Column(String) #TODO : binary
+    dhash128 = Column(String)
+    phash = Column(String)
       
-    url = Column(URLType)
-    url_thumb = Column(URLType)
+    url = Column(String, default = '')
+    url_thumb = Column(String, default = '')
     in_bktree = Column(Boolean, default=False) # for LARGE (100k's) numbers of image search
 
 
