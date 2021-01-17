@@ -174,7 +174,10 @@ def make_thumbnail(image_url: str):
     """
     Makes a thumbnail of the target url
     """
-    MAX_SIZE = (300, 300)
+    # WIDTH = 240
+    # HEIGHT = 270
+    # 8x4 on a 1920x1080 screen
+    MAX_SIZE = (240, 270)
 
     # better
     with Path(image_url) as p:
