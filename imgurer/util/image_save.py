@@ -174,12 +174,13 @@ def make_thumbnail(image_url: str):
     """
     Makes a thumbnail of the target url
     """
-    MAX_SIZE = (100, 100)
+    MAX_SIZE = (300, 300)
 
     # better
     with Path(image_url) as p:
         with Image.open(p) as img:
             img.thumbnail(MAX_SIZE)
+            img = img.resize(MAX_SIZE)
             img = img.convert("RGB")
             p = "NAS/thumbs/" / p.relative_to("NAS/nouser/")
             thumb_path = p
