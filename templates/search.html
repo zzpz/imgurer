@@ -3,7 +3,10 @@
 {% block content %}
 
 <script>
+    //below uses registering of event listeners as opposed to browse
     $(document).ready(function () {
+        refresh_browse_images();
+
         var fileForm = document.getElementById('fileForm');
         fileForm.reset();
         var filesToUpload = document.getElementById('filesToUpload');
@@ -12,6 +15,8 @@
 
         var fileList = [];
         var renderFileList, sendFile; //functions
+
+        // watch for refresh
 
         // watch input, clear and push to filelist 
         filesToUpload.addEventListener('change', function (e) {
@@ -25,12 +30,34 @@
         //prevent submission, fire an api call to upload one (unvalidated) image
         fileForm.addEventListener('submit', function (evnt) {
             evnt.preventDefault();
+            clearImages();
             for (var i = 0, len = fileList.length; i < len; i++) {
-                sendFile(fileList[i]);
+                let id = sendFile(fileList[i]);
             }
             fileForm.reset();
             fileList = [];
         });
+
+        // we are trying to avoid sending arrays of files and instead firing one at a time parallel
+        sendFile = function (file) {
+            var image = new FormData();
+            var request = new XMLHttpRequest();
+
+            image.set('image', file);
+            request.open("POST", '/images/upload');
+            request.send(image);
+            request.onload = function () {
+                //gosh we're just going to fill this bad boy up with junk
+                let obj = JSON.parse(request.responseText);
+                refresh_search_images(obj.id);
+
+            };
+            //happy path continues 
+            //this is very overloaded as a function
+        };
+
+
+
 
         //renders files that have been added
         renderFileList = function () {
@@ -44,23 +71,108 @@
                 fileListDisplay.appendChild(fileDisplayElement);
             });
         };
-
-        // we are trying to avoid sending arrays of files and instead firing one at a time parallel
-        sendFile = function (file) {
-            var image = new FormData();
-            var request = new XMLHttpRequest();
-
-            image.set('image', file);
-            request.open("POST", '/images/upload');
-            request.send(image);
-
-            // not sure how i get this out and onto my display for succes/failure but it's responding
-            request.onload = function () {
-                console.log("status: " + request.status);
-            };
-        };
-
     });
+
+    function clicked_image_for_search(element) {
+        refresh_search_images(this)
+        console.log(element)
+    }
+
+    function refresh_search_images(id) {
+        const url = '/images/similar?image_id=' + id;
+        clearImages();
+        json_obj = fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            referrerPolicy: 'no-referrer'
+        })
+            .then(response => response.json())
+            .then(data => create_images(data))
+    }
+
+    function refresh_browse_images() {
+
+        const browse_url = '/images/browsing';
+        clearImages();
+
+        json_obj = fetch(browse_url)
+            .then(response => response.json())
+            .then(data => create_images(data))
+    }
+
+    function create_images(data) {
+        for (const image of data.images) {
+            card = create_card(image);
+            document.getElementById('image_cards_display').append(card);
+        }
+    }
+
+    function create_image(img_obj) {
+        //make the html element
+        var img = new Image();
+        img.src = "/" + img_obj.thumb_url;
+        img.alt = "/" + img_obj.url;
+        img.setAttribute("data-id", img_obj.id);
+        img.addEventListener("click", clicked_image_for_search.bind(img.getAttribute("data-id"), img))
+
+        return img
+
+    }
+
+    function create_card(img_obj) {
+        //there has to be a programmatic way
+        var card = document.createElement('div');
+        card.setAttribute("class", "card");
+        card.setAttribute("name", "delete");
+
+        var image_div = document.createElement('div');
+        image_div.setAttribute("class", "image");
+        image_div.setAttribute("data-id", img_obj.id);
+
+        card.append(image_div);
+
+        img = create_image(img_obj);
+
+        image_div.append(img);
+
+        // var content = document.createElement('div');
+        // var header = document.createElement('div');
+        // var meta = document.createElement('div');
+
+
+
+
+
+
+        // image_div.append(img);
+
+        // content.setAttribute("class", "content");
+        // header.setAttribute("class", "header");
+        // meta.setAttribute("class", "meta");
+        // content.append(header);
+        // content.append(meta);
+
+        // card.append(image_div);
+        // card.append(content);
+
+        return card
+
+
+    }
+
+
+    function clearImages() {
+        var images = document.getElementsByName("delete");
+
+        //iterate backwards since we seem to be mutating it and affecting with foreach remove()
+        for (let i = images.length - 1; i >= 0; i--) {
+            images[i].remove()
+        };
+    }
+
 
 
 
@@ -92,5 +204,18 @@
     </tbody>
 </table>
 
+<div class="ui container">
+
+    <button onclick="refresh_browse_images()">Refresh Images</button>
+    <button onclick="clearImages()">Clear images</button>
+</div>
+<div class="ui container">
+    <br>
+    <div class="ui">
+        <div class="ui eight link cards" id="image_cards_display">
+        </div>
+    </div>
+</div>
+</div>
 
 {% endblock %}
