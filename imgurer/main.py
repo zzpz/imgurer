@@ -36,8 +36,8 @@ async def root(request: Request):
 
 
 @app.get("/NAS/{f1}/{f2}/{f3}/{file}", tags=["development", "serveImages"])
-async def test(f1: str, f2: str, f3: str, file: str):
+async def file_server(f1: str, f2: str, f3: str, file: str):
     """
-    a hack to serve files from disk in development
+    a hack to serve files from disk
     """
     return FileResponse(f"NAS/{f1}/{f2}/{f3}/{file}")

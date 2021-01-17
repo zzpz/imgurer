@@ -37,7 +37,7 @@ from fastapi.exceptions import HTTPException
 
 router = APIRouter(
     prefix="/images",
-    tags=["images"],
+    # tags=["images"],
     # dependencies=[Depends()]
 )
 
@@ -46,7 +46,7 @@ templates = Jinja2Templates(directory="templates")
 
 
 # use as endpoint for multiple images in parallel fashion for uploads
-@router.post("/upload", status_code=201)
+@router.post("/upload", tags=["images"], status_code=201)
 async def upload_image(
     image: UploadFile = File(...),
     nas: str = Depends(get_nas),
@@ -112,7 +112,7 @@ async def similar_images_to(image_id: int, db: Session = Depends(get_images_db))
     return similar_imgs
 
 
-@router.get("/rebuildBKT", tags=["search, development"], status_code=200)
+@router.get("/rebuildBKT", tags=["development"], status_code=200)
 def rebuild_BKT(db: Session = Depends(get_images_db)):
     """
     # this is for development because of some design decisions
@@ -128,30 +128,30 @@ def rebuild_BKT(db: Session = Depends(get_images_db)):
         SST.update_bkTree(int(image.dhash128), image.id)
 
 
-@router.get("/upload")
-async def read_upload(request: Request):
+@router.get("/upload", tags=["development"])
+async def html_upload(request: Request):
     """
-    i'm not up for building a front end
+    returns /upload template
     """
     return templates.TemplateResponse(
         "upload.html", {"request": request}  # TODO: staticfiles
     )
 
 
-@router.get("/search")
-async def read_search(request: Request):
+@router.get("/search", tags=["development"])
+async def html_search(request: Request):
     """
-    i'm not up for building a front end
+    returns /search template
     """
     return templates.TemplateResponse(
         "search.html", {"request": request}  # TODO: staticfiles
     )
 
 
-@router.get("/browse")
-async def read_search(request: Request):
+@router.get("/browse", tags=["development"])
+async def html_browse(request: Request):
     """
-    i'm not up for building a front end
+    returns /browse template
     """
     return templates.TemplateResponse(
         "browse.html", {"request": request}  # TODO: staticfiles
