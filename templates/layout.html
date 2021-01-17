@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>IMGurer</title>
+    <title>📸 imgurer</title>
 
 
     <link rel="icon" href="data:,">
@@ -16,10 +16,14 @@
 
 <body>
     <div class="ui container">
-        <a href="/">
-            <H2>IMGURER (click me to go home)</H2>
-        </a>
+
+
+        <H2>📸 imgurer </H2>
+        <br>
         <div class="ui input">
+            <form action="/">
+                <input type="submit" value="🏠 Home">
+            </form>
             <form action="/images/upload">
                 <input type="submit" value="Upload">
             </form>
@@ -32,7 +36,7 @@
         </div>
         <br>
         <br>
-        <br>
+
         {%block content %}
         {%endblock %}
     </div>
