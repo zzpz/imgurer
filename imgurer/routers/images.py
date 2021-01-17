@@ -92,7 +92,9 @@ async def upload_image(
 @router.post("/similar", tags=["search"], status_code=200, response_model=MultiImageOut)
 async def similar_images_to(image_id: int, db: Session = Depends(get_images_db)):
     """
-    Endpoint for and image id
+    Takes and image id and returns images considered similar
+    - (fast filtered by 128bit dhash comparison)
+    - frontend has upload image for comparison functionality
     - returning its similar images' ID and urls
     """
     db_image = get_image(images_db=db, id=image_id)
@@ -158,15 +160,21 @@ async def html_browse(request: Request):
     )
 
 
-@router.get("/browsing", status_code=200, response_model=MultiImageOut)
+@router.get("/browsing", tags=["images"], status_code=200, response_model=MultiImageOut)
 async def browse(db: Session = Depends(get_images_db)):
+    """
+    Returns a random selection of images
+    """
     images_to_browse = browse_images(images_db=db)
 
     return images_to_browse
 
 
-@router.get("/")
-async def root(request: Request):
+@router.get("/", tags=["development"])
+async def images(request: Request):
+    """
+    undeveloped
+    """
     return templates.TemplateResponse(
         "home.html", {"request": request}  # TODO: staticfiles
     )
