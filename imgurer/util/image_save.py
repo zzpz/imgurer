@@ -36,49 +36,24 @@ def calc_item_url(filehash: str, nas: str, username: Optional[str] = None) -> st
     database should update after
 
     TODO: a better way if I somehow had all files already? feels like i have to do this to avoid race conditions
+    TODO: users
     """
     # calculate image url (path pattern)
-    if username:
-        # ensure dir exists
-        dir_path = (
-            f"{nas}/{userhash(username)}/{username}/{filehash[:2]}/{filehash[2:4]}"
-        )
-        ensure_dir(dir_path)
-        path_pattern = f"{userhash(username)}/{username}/{filehash[:2]}/{filehash[2:4]}/{filehash}_%s.jpg"
-    else:
-        dir_path = f"{nas}/nouser/{filehash[:2]}/{filehash[2:4]}"
-        ensure_dir(dir_path)
-        path_pattern = f"{nas}/nouser/{filehash[:2]}/{filehash[2:4]}/{filehash}_%s.jpg"
+    path_pattern = f"{nas}/nouser/{filehash[:2]}/{filehash[2:4]}/{filehash}_%s.jpg"
+    ensure_dir(path_pattern)
 
     # calc path
-
     url = next_file_path(path_pattern)
-
-    # perform search for that url existing
-    # next_file_path(path_pattern)
-    # exponential search - https://en.wikipedia.org/wiki/Exponential_search
-    # go to the folder
-    # search folder for value
-
-    # if found
-    # find next available
-    # write to disk
-    # update database with url
-    # move along
-
-    # need username of who uploaded
-    # means upload requires auth
-    # means I need to sort a basic user login / auth front end
 
     return url
 
 
-def ensure_dir(dir_path: str):
+def ensure_dir(file_path: str):
     """
-    If directory does not exist we need to make it,
-    can't async or race condition on file create
+    If directory does not exist we need to make it.
+    can't async or race condition on file create?
     """
-    path = Path(dir_path)
+    path = Path(file_path).parent
     Path.mkdir(path, parents=True, exist_ok=True)  # fails silently
 
 
@@ -201,7 +176,6 @@ def make_thumbnail(image_url: str):
     """
     MAX_SIZE = (100, 100)
 
-    thumb_path: str = ""
     # better
     with Path(image_url) as p:
         with Image.open(p) as img:
@@ -209,7 +183,7 @@ def make_thumbnail(image_url: str):
             img = img.convert("RGB")
             p = "NAS/thumbs/" / p.relative_to("NAS/nouser/")
             thumb_path = p
-            ensure_dir(p.parent)
+            ensure_dir(p)
             img.save(thumb_path)
     return str(thumb_path)
 
