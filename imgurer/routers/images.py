@@ -85,7 +85,7 @@ async def upload_image(
     return {
         "filename": db_image.filename,
         "content_type": image.content_type,
-        "file": image.file,
+        "id": db_image.id,
     }
 
 
