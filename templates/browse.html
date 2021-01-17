@@ -15,8 +15,6 @@
     json_obj = fetch(browse_url)
       .then(response => response.json())
       .then(data => create_images(data))
-      .then(data => console.log(data));
-
 
   }
 
@@ -37,14 +35,6 @@
 
     return img
 
-    // card = make_card_html(img_obj.id, img_obj.url, img_obj.thumb_url)
-    // console.log(card)
-    // //find where to attach the element in the DOM
-    // cards = document.getElementById('image_cards_display');
-
-    // //attach it
-    // cards.append(card)
-
   }
 
   function create_card(img_obj) {
@@ -62,8 +52,6 @@
     img = create_image(img_obj);
 
     image_div.append(img);
-
-
 
     // var content = document.createElement('div');
     // var header = document.createElement('div');
