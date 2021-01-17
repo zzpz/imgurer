@@ -14,8 +14,25 @@
 <body>
     <div class = "ui container">
         <a href="/"> <H2 >IMGURER (click me to go home)</H2> </a>
+        <div class="ui input">
+            <form action="/images/upload">
+            <input type="submit" value ="Upload">
+            </form>
+            <form action="/images/search">
+              <input type="submit" value ="Search"> 
+              </form>
+              <form action="/images/browse">
+                <input type="submit" value ="Browse"> 
+                </form>
+          </div>
+          <br>
+<br>
+<br>
         {%block content %}
         {%endblock %}
     </div>
+
+    
+
 </body>
 </html>

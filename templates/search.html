@@ -70,14 +70,17 @@
 </script>
 
 <form id ='fileForm' method="post" action="/images" enctype="multipart/form-data">
-<input type="file" name="images" id="filesToUpload" multiple /> 
+<input type="file" name="images" id="filesToUpload"  /> 
 <button type = "submit" id = "fileSubmit" class="ui button primary">
-    submit
+    UPLOAD
 </button>
 </form>
 
 <br>
-    <table class= "ui celled striped table">
+<div class = "ui container">
+    <p>Upload an image above or click on an image below to find similar images (max 21, closest)</p>
+</div>
+    <table class= "ui celled striped table" id=imageDisplay>
         <thead>
             <tr>
               <th>Number</th>
