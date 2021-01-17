@@ -13,25 +13,20 @@ from . import crud, schemas, models
 # Front end
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+
 # routing
 from .routers import images, users
 
 models.Base.metadata.create_all(bind=engine)
-# APP declare 
+# APP declare
 app = FastAPI()
-# ROUTERS 
-app.include_router(
-    images.router
-    )
-app.include_router(
-    users.router
-)
+# ROUTERS
+app.include_router(images.router)
+app.include_router(users.router)
 
 templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/")
 async def root(request: Request):
-    return templates.TemplateResponse("home.html",{
-        "request": request
-    })
+    return templates.TemplateResponse("home.html", {"request": request})

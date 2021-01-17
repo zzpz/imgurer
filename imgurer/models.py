@@ -1,12 +1,22 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Table, Binary,LargeBinary
+from sqlalchemy import (
+    Boolean,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    DateTime,
+    Table,
+    Binary,
+    LargeBinary,
+)
 from sqlalchemy_utils import URLType
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
-#TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
-from .database import DB_PROVIDER 
+# TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
+from .database import DB_PROVIDER
 
 
 # many to many images:tags
@@ -15,18 +25,22 @@ from .database import DB_PROVIDER
 #     Column('tag_id', Integer, ForeignKey('tags.id'))
 # )
 
+
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True) #pk
+    id = Column(Integer, primary_key=True, index=True)  # pk
 
-    date_created = Column(DateTime, server_default=func.now()) if DB_PROVIDER == 'PG' else Column(DateTime,server_default = func.datetime('now')) #sqllite has no now(), postgres does
-    #https://www.techonthenet.com/sqlite/functions/now.php
+    date_created = (
+        Column(DateTime, server_default=func.now())
+        if DB_PROVIDER == "PG"
+        else Column(DateTime, server_default=func.datetime("now"))
+    )  # sqllite has no now(), postgres does
+    # https://www.techonthenet.com/sqlite/functions/now.php
 
-    hashed_password = Column(String) #hashed
-    username = Column(String, unique = True)
+    hashed_password = Column(String)  # hashed
+    username = Column(String, unique=True)
     permission_lvl = Column(Integer)
-    disabled = Column(Boolean, default = False)
-
+    disabled = Column(Boolean, default=False)
 
     # image = relationship("Image", back_populates="owner") #maintains referential
 
@@ -34,22 +48,23 @@ class User(Base):
         orm_mode = True
 
 
-
 class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
-    date_created = Column(DateTime,server_default = func.datetime('now')) 
-    #sqllite has no now()
+    date_created = Column(DateTime, server_default=func.datetime("now"))
+    # sqllite has no now()
 
-    parsed = Column(Boolean, default = False)    
-    dhash64 = Column(String, default = '') #TODO : binary
-    dhash128 = Column(String, default ='')
-    phash = Column(String, default ='')
+    parsed = Column(Boolean, default=False)
+    dhash64 = Column(String, default="")  # TODO : binary
+    dhash128 = Column(String, default="")
+    phash = Column(String, default="")
 
-    filename = Column(String, default ='')   
-    url = Column(String, default = '')
-    url_thumb = Column(String, default = '')
-    in_bktree = Column(Boolean, default=False) # for LARGE (100k's) numbers of image search
+    filename = Column(String, default="")
+    url = Column(String, default="")
+    url_thumb = Column(String, default="")
+    in_bktree = Column(
+        Boolean, default=False
+    )  # for LARGE (100k's) numbers of image search
 
 
 # class Tag(Base):
@@ -66,7 +81,3 @@ class Image(Base):
 
 #     class Config:
 #         orm_mode = True
-
-
-
-    
