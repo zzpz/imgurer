@@ -16,14 +16,13 @@ from fastapi.responses import HTMLResponse, FileResponse
 
 # routing
 from .routers import images, users
-
-# from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
 
 
 models.Base.metadata.create_all(bind=engine)
 # APP declare
 app = FastAPI()
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # ROUTERS
 app.include_router(images.router)
 app.include_router(users.router)
