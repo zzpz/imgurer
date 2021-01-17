@@ -5,8 +5,10 @@
 <script>
     //below uses registering of event listeners as opposed to browse
     $(document).ready(function () {
+
         refresh_browse_images();
 
+        var rebuild = document.getElementById('rebuild');
         var fileForm = document.getElementById('fileForm');
         fileForm.reset();
         var filesToUpload = document.getElementById('filesToUpload');
@@ -16,7 +18,11 @@
         var fileList = [];
         var renderFileList, sendFile; //functions
 
-        // watch for refresh
+        // rebuild bkTree
+        rebuild.addEventListener('click', function (e) {
+            rebuild_bktree();
+            refresh_browse_images();
+        })
 
         // watch input, clear and push to filelist 
         filesToUpload.addEventListener('change', function (e) {
@@ -75,7 +81,7 @@
 
     function clicked_image_for_search(element) {
         refresh_search_images(this)
-        console.log(element)
+        //console.log(element)
     }
 
     function refresh_search_images(id) {
@@ -120,6 +126,12 @@
 
         return img
 
+    }
+
+    function rebuild_bktree() {
+
+        const rebuild_url = '/images/rebuildBKT';
+        fetch(rebuild_url)
     }
 
     function create_card(img_obj) {
@@ -184,13 +196,17 @@
 <form id='fileForm' method="post" action="/images" enctype="multipart/form-data">
     <input type="file" name="images" id="filesToUpload" />
     <button type="submit" id="fileSubmit" class="ui button primary">
-        SEARCH
+        search for file
     </button>
+    |
+    <button id='rebuild' class="ui button secondary mini"> Rebuild Search Tree</button>
+
 </form>
 
 <br>
 <div class="ui container">
-    <p>Upload an image above or click on an image below to find similar images (max 21, closest)</p>
+    <p>Upload an image above or click on an image below to find similar images.
+    </p>
 </div>
 <table class="ui celled striped table" id=imageDisplay>
     <thead>
