@@ -116,10 +116,11 @@ def get_bkt_reload_images(images_db: Session):
 
 def browse_images(images_db: Session) -> schemas.MultiImageOut:
     """
-    Here, have up to 20 random images from the database
+    Here, have up to N random images from the database
     """
+    n: int = 48
     number = images_db.query(func.count(models.Image.id)).scalar()
-    randoms = random.sample(range(1, number + 1), min(20, number))
+    randoms = random.sample(range(1, number + 1), min(n, number))
 
     images_in_db = (
         images_db.query(models.Image).filter(models.Image.id.in_(randoms)).all()
