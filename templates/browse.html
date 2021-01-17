@@ -4,7 +4,9 @@
 
 {% block content %}
 <script>
-
+  $(document).ready(function () {
+    refresh_browse_images();
+  });
   function refresh_browse_images() {
 
     const browse_url = '/images/browsing';
@@ -101,18 +103,16 @@
 
 <div class="ui container">
 
-  <button onclick="makeit()"> IMAGE TEST</button>
-  <button onclick="refresh_browse_images()">images?</button>
+  <button onclick="refresh_browse_images()">Refresh Images</button>
   <button onclick="clearImages()">Clear images</button>
-
-
-  <div class="ui container">
-    <br>
-    <div class="ui">
-      <div class="ui four link cards" id="image_cards_display">
-      </div>
+</div>
+<div class="ui container">
+  <br>
+  <div class="ui">
+    <div class="ui four link cards" id="image_cards_display">
     </div>
   </div>
+</div>
 </div>
 
 {% endblock %}
