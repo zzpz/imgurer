@@ -3,7 +3,7 @@
 {% block content %}
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var fileForm = document.getElementById('fileForm');
         fileForm.reset();
         var filesToUpload = document.getElementById('filesToUpload');
@@ -14,18 +14,18 @@
         var renderFileList, sendFile; //functions
 
         // watch input, clear and push to filelist 
-        filesToUpload.addEventListener('change', function(e){
+        filesToUpload.addEventListener('change', function (e) {
             fileList = [];
-            for(var i = 0; i<filesToUpload.files.length; i++){
+            for (var i = 0; i < filesToUpload.files.length; i++) {
                 fileList.push(filesToUpload.files[i]);
             }
             renderFileList();
         })
 
         //prevent submission, fire an api call to upload one (unvalidated) image
-        fileForm.addEventListener('submit', function(evnt){
+        fileForm.addEventListener('submit', function (evnt) {
             evnt.preventDefault();
-            for (var i = 0, len = fileList.length; i<len; i++){
+            for (var i = 0, len = fileList.length; i < len; i++) {
                 sendFile(fileList[i]);
             }
             fileForm.reset();
@@ -33,29 +33,29 @@
         });
 
         //renders files that have been added
-        renderFileList = function() {
+        renderFileList = function () {
             fileListDisplay.innerHTML = '';
-            fileList.forEach(function(file,index){
+            fileList.forEach(function (file, index) {
                 var fileDisplayElement = document.createElement('tr');
 
 
-                fileDisplayElement.innerHTML = '<td>'+(index + 1) + '</td>' +
-                '<td>'+ file.name + '</td>';
+                fileDisplayElement.innerHTML = '<td>' + (index + 1) + '</td>' +
+                    '<td>' + file.name + '</td>';
                 fileListDisplay.appendChild(fileDisplayElement);
             });
         };
 
         // we are trying to avoid sending arrays of files and instead firing one at a time parallel
-        sendFile = function(file) {
+        sendFile = function (file) {
             var image = new FormData();
             var request = new XMLHttpRequest();
 
-            image.set('image',file);
+            image.set('image', file);
             request.open("POST", '/images/upload');
             request.send(image);
 
             // not sure how i get this out and onto my display for succes/failure but it's responding
-            request.onload = function() {
+            request.onload = function () {
                 console.log("status: " + request.status);
             };
         };
@@ -65,32 +65,32 @@
 
 
 
-    
+
 
 </script>
 
-<form id ='fileForm' method="post" action="/images" enctype="multipart/form-data">
-<input type="file" name="images" id="filesToUpload"  /> 
-<button type = "submit" id = "fileSubmit" class="ui button primary">
-    UPLOAD
-</button>
+<form id='fileForm' method="post" action="/images" enctype="multipart/form-data">
+    <input type="file" name="images" id="filesToUpload" />
+    <button type="submit" id="fileSubmit" class="ui button primary">
+        UPLOAD
+    </button>
 </form>
 
 <br>
-<div class = "ui container">
+<div class="ui container">
     <p>Upload an image above or click on an image below to find similar images (max 21, closest)</p>
 </div>
-    <table class= "ui celled striped table" id=imageDisplay>
-        <thead>
-            <tr>
-              <th>Number</th>
-              <th>FileName</th>
-              <th> Remove?</th>
-            </tr>
-          </thead>
-          <tbody id='fileListDisplay'>
-        </tbody>
-    </table>
+<table class="ui celled striped table" id=imageDisplay>
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>FileName</th>
+            <th> Remove?</th>
+        </tr>
+    </thead>
+    <tbody id='fileListDisplay'>
+    </tbody>
+</table>
 
 
 {% endblock %}
