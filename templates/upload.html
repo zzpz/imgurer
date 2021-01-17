@@ -40,7 +40,7 @@
 
 
                 fileDisplayElement.innerHTML = '<td>' + (index + 1) + '</td>' +
-                    '<td>' + file.name + '</td>';
+                    '<td>' + file.name + '</td>' + '<td> ☠️ </td>' + '<td> 🤷‍♀️ </td> ';
                 fileListDisplay.appendChild(fileDisplayElement);
             });
         };
@@ -82,7 +82,8 @@
         <tr>
             <th>Number</th>
             <th>FileName</th>
-            <th> Remove?</th>
+            <th> remove?</th>
+            <th> success?</th>
         </tr>
     </thead>
     <tbody id='fileListDisplay'>
