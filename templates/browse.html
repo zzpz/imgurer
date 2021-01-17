@@ -4,29 +4,115 @@
 
 {% block content %}
 <script>
-  function myFunction() {
-    var btn = document.createElement("BUTTON");
-    btn.innerHTML = "<a href ='/'>clicke me</a>";
-    document.body.appendChild(btn);
+
+  function refresh_browse_images() {
+
+    const browse_url = '/images/browsing';
+    clearImages()
+
+    json_obj = fetch(browse_url)
+      .then(response => response.json())
+      .then(data => create_images(data))
+      .then(data => console.log(data));
+
+
+  }
+
+  function create_images(data) {
+    for (const image of data.images) {
+      card = create_card(image);
+      document.getElementById('image_cards_display').append(card);
+    }
+  }
+
+  function create_image(img_obj) {
+    //make the html element
+    var img = new Image();
+    img.src = "/" + img_obj.thumb_url;
+    img.alt = "/" + img_obj.url;
+    img.setAttribute("data-id", img_obj.id);
+
+
+    return img
+
+    // card = make_card_html(img_obj.id, img_obj.url, img_obj.thumb_url)
+    // console.log(card)
+    // //find where to attach the element in the DOM
+    // cards = document.getElementById('image_cards_display');
+
+    // //attach it
+    // cards.append(card)
+
+  }
+
+  function create_card(img_obj) {
+    //there has to be a programmatic way
+    var card = document.createElement('div');
+    card.setAttribute("class", "card");
+    card.setAttribute("name", "delete");
+
+    var image_div = document.createElement('div');
+    image_div.setAttribute("class", "image");
+    image_div.setAttribute("data-id", img_obj.id);
+
+    card.append(image_div);
+
+    img = create_image(img_obj);
+
+    image_div.append(img);
+
+
+
+    // var content = document.createElement('div');
+    // var header = document.createElement('div');
+    // var meta = document.createElement('div');
+
+
+
+
+
+
+    // image_div.append(img);
+
+    // content.setAttribute("class", "content");
+    // header.setAttribute("class", "header");
+    // meta.setAttribute("class", "meta");
+    // content.append(header);
+    // content.append(meta);
+
+    // card.append(image_div);
+    // card.append(content);
+
+    return card
+
+
+  }
+
+
+  function clearImages() {
+    var images = document.getElementsByName("delete");
+
+    //iterate backwards since we seem to be mutating it and affecting with foreach remove()
+    for (let i = images.length - 1; i >= 0; i--) {
+      images[i].remove()
+    };
   }
 </script>
 
+<div class="ui container">
 
-<div class="ui ">
-  <button>images?</button>
-  <button onclick="myFunction()">Try it</button>
-  <div class="ui">
+  <button onclick="makeit()"> IMAGE TEST</button>
+  <button onclick="refresh_browse_images()">images?</button>
+  <button onclick="clearImages()">Clear images</button>
 
-    <table class="ui celled striped table">
-      <thead>
-        <tr>
-          <th>Number</th>
-          <th>FileName</th>
-          <th> Remove?</th>
-        </tr>
-      </thead>
-      <tbody id='fileListDisplay'>
-      </tbody>
-    </table>
+
+  <div class="ui container">
+    <br>
+    <div class="ui">
+      <div class="ui four link cards" id="image_cards_display">
+      </div>
+    </div>
   </div>
-  {% endblock %}
+</div>
+
+{% endblock %}
