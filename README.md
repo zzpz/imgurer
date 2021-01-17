@@ -4,13 +4,15 @@ A functioning image repository API and frontend with upload and similar(duplicat
 
 ## installation
 
->create a virtual environment
->activate virtual environment
->copy repository
->install requirements
->(optionally) "chmod +x run" to >more easily start server
->run server and navigate to >localhost (127.0.0.1:8000/)
->127.0.0.1:8000/docs for directly interfacing with the API
+```txt
+create a virtual environment
+activate virtual environment
+copy repository
+install requirements
+(optionally) "chmod +x run" to >more easily start server
+run server and navigate to >localhost (127.0.0.1:8000/)
+127.0.0.1:8000/docs for directly interfacing with the API
+```
 
 ```bash
 python3 -m venv '/path/to/new/virtual/environment'
