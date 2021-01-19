@@ -18,6 +18,7 @@ run server and navigate to >localhost (127.0.0.1:8000/)
 python3 -m venv '/path/to/new/virtual/environment'
 cd '/path/to/new/virtual/environment'
 git clone https://github.com/zzpz/imgurer.git
+cd imgurer
 pip install -r requirements
 uvicorn imgurer.main:app --reload
 ```
