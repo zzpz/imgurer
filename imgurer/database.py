@@ -2,10 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from os import getenv
 
-DB_PROVIDER = "SQLLITE"
-SQLALCHEMY_DATABASE_URL = "sqlite:///./imgurer.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+
+# SQLALCHEMY_DATABASE_URL = postgres://USER:PASSWORD@SERVER:PORT/database
+SQLALCHEMY_DATABASE_URL = getenv("DB_URL")
+
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

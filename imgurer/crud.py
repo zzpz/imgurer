@@ -21,13 +21,14 @@ from fastapi import UploadFile
 # password
 from passlib.context import CryptContext
 
+# env vars
+from os import getenv
+
+SECRET_KEY = getenv("SECRET_KEY")
+ALGORITHM = getenv("SECRET_KEY")
+ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# to get a string like this run:
-# openssl rand -hex 32
-# TODO:replace with environment variables
-SECRET_KEY = "1a6fb4e63cca869677e4ca79e254ab1d56490894c8844d7838a40daf9cbe2988"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 #### PASSWORDS

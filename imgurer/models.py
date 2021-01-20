@@ -15,9 +15,6 @@ from sqlalchemy.orm import relationship
 
 from .database import Base
 
-# TODO: migrate to postgres instead of sqllite and fix date_created default time accordingly
-from .database import DB_PROVIDER
-
 
 # many to many images:tags
 # images_tags_association = Table('image_tags', Base.metadata,
@@ -30,11 +27,8 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)  # pk
 
-    date_created = (
-        Column(DateTime, server_default=func.now())
-        if DB_PROVIDER == "PG"
-        else Column(DateTime, server_default=func.datetime("now"))
-    )  # sqllite has no now(), postgres does
+    date_created = Column(DateTime, server_default=func.now())
+    # sqllite has no now() function, postgres does
     # https://www.techonthenet.com/sqlite/functions/now.php
 
     hashed_password = Column(String)  # hashed
@@ -51,7 +45,7 @@ class User(Base):
 class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
-    date_created = Column(DateTime, server_default=func.datetime("now"))
+    date_created = Column(DateTime, server_default=func.now())
     # sqllite has no now()
 
     parsed = Column(Boolean, default=False)
