@@ -5,7 +5,7 @@ A functioning image repository API and frontend with upload and similar(duplicat
 ## installation
 
 ```txt
-create a virtual environment
+create a virtual environment in current directory
 activate virtual environment
 copy repository
 install requirements
@@ -15,9 +15,10 @@ run server and navigate to >localhost (127.0.0.1:8000/)
 ```
 
 ```bash
-python3 -m venv '/path/to/new/virtual/environment'
-cd '/path/to/new/virtual/environment'
-curl https://github.com/zzpz/imgurer.git
+python3 -m venv './imgurer'
+source bin/activate
+git clone https://github.com/zzpz/imgurer.git
+cd imgurer
 pip install -r requirements
 uvicorn imgurer.main:app --reload
 ```
