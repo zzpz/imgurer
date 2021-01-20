@@ -10,4 +10,5 @@ passlib[bcrypt] # hashing passwords
 pillow  # image manipulation
 pybktree # tree storage for ~ O(LogN) search of closeness
 aiofiles # for serving our static files from disk
+psycopg2 #alembic migrations
 #dhash #for computing hashes
