@@ -64,5 +64,3 @@ imgurer will currently write files to local disk, if this is restricted expect e
 - frontend javascript and html is a mess and little to none is re-used
 
 - ***this is in no way safe for a production environment***
-
-
