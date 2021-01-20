@@ -4,9 +4,24 @@ A functioning image repository API and frontend with upload and similar(duplicat
 
 ## installation
 
+NOTE:
+
+- using virtualenvwrapper is recommended
+- currently environment variables are required
+  - --> defaults are supplied in postactivate.txt
+
 ```txt
 create a virtual environment in current directory
-activate virtual environment
+activate virtual environment 
+
+
+
+NOTE: using virtualenvwrapper is recommended
+  create environment variables as per postactivate.txt (unset in predeactivate.txt)
+  https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html?highlight=postactivate#postactivate
+
+
+
 copy repository
 install requirements
 (optionally) "chmod +x run" to >more easily start server
@@ -14,11 +29,18 @@ run server and navigate to >localhost (127.0.0.1:8000/)
 127.0.0.1:8000/docs for directly interfacing with the API
 ```
 
+Python only (no venvwrapper) installation using bash
+
 ```bash
 python3 -m venv './imgurer'
 source bin/activate
 git clone https://github.com/zzpz/imgurer.git
 cd imgurer
+
+set -o allexport
+source postactivate.txt
+set +o allexport
+
 pip install -r requirements
 uvicorn imgurer.main:app --reload
 ```
@@ -26,6 +48,7 @@ uvicorn imgurer.main:app --reload
 ## requirements
 
 imgurer will currently write files to local disk, if this is restricted expect errors
+virtualenvwrapper allows for pre and post activation hooks (setting env variables such as $DB_URL)
 
 ## Usage
 
