@@ -31,6 +31,17 @@ imgurer will currently write files to local disk, if this is restricted expect e
 - The application is accessible through both API calls and a frontend on local host.
 - User creation is only accessible through the /docs API backend
 
+### Future areas of development
+
+- [x] refactor to external db (:elephant: sql)
+- [ ] refactor of image storage from local to CDN/NAS
+- [ ] external image store(s)
+- [ ] user login and cookied credentials
+- [ ] frontend framework (react/vue/etc)
+- [ ] parsing image exif data on upload
+- [ ] migration to postgres
+- [ ] extending models to link user and images
+
 ### notes
 
 - images uploaded are stored on disk as both a thumbnail and the original
@@ -54,11 +65,4 @@ imgurer will currently write files to local disk, if this is restricted expect e
 
 - ***this is in no way safe for a production environment***
 
-#### Future areas of development
 
-- [ ] user login and cookied credentials
-- [ ] refactor of image storage from local to CDN/NAS
-- [ ] frontend framework (react/vue/etc)
-- [ ] parsing image exif data on upload
-- [ ] migration to postgres
-- [ ] extending models to link user and images
