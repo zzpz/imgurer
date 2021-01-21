@@ -1,0 +1,49 @@
+{%extends "layout.html" %}
+
+<head>
+    <!-- add to document <head> for file_pond uploads -->
+
+</head>
+
+
+{% block content %}
+<!-- add before </body> -->
+<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-encode/dist/filepond-plugin-file-encode.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+<script
+    src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+
+
+
+
+<input type="file" class="filepond" name="image" multiple data-allow-reorder="true" data-max-file-size="3MB"
+    data-max-files="3" enctype="multipart/form-data">
+
+<script>
+
+    FilePond.setOptions({
+        server: '/images/upload'
+    });
+
+    FilePond.registerPlugin(
+
+        // encodes the file as base64 data
+        // FilePondPluginFileEncode,
+
+        // validates the size of the file
+        // FilePondPluginFileValidateSize,
+
+        // corrects mobile image orientation
+        FilePondPluginImageExifOrientation,
+
+        // previews dropped images
+        FilePondPluginImagePreview
+    );
+
+    // Select the file input and use create() to turn it into a pond
+    const inputElement = document.querySelector('input[type="file"]');
+    const pond = FilePond.create(inputElement);   
+</script>
+{% endblock %}
