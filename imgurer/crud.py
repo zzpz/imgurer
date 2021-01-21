@@ -74,13 +74,10 @@ def create_image(images_db: Session, image: schemas.ImageCreate):
     connect to provided database Session, create image in db
     """
     db_image = models.Image(
-        parsed=False,
-        dhash64=None,
-        phash=None,
-        dhash128=image.dhash128,
-        url=image.url,
-        url_thumb=image.thumb_url,
         filename=image.filename,
+        url=image.url,
+        dhash128=image.dhash128,
+        url_thumb=image.thumb_url,
     )
     images_db.add(db_image)
     images_db.commit()

@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URL = getenv("DB_URL")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},  # false for sqlite reasons
+    # connect_args={"check_same_thread": False},  # false for sqlite reasons
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

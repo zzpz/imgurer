@@ -46,19 +46,18 @@ class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
     date_created = Column(DateTime, server_default=func.now())
-    # sqllite has no now()
-
     parsed = Column(Boolean, default=False)
-    dhash64 = Column(String, default="")  # TODO : binary
     dhash128 = Column(String, default="")
-    phash = Column(String, default="")
-
     filename = Column(String, default="")
     url = Column(String, default="")
     url_thumb = Column(String, default="")
-    in_bktree = Column(
-        Boolean, default=False
-    )  # for LARGE (100k's) numbers of image search
+    in_bktree = Column(Boolean, default=False)
+
+    # dhash64 = Column(String, default="")  # TODO : binary
+    # phash = Column(String, default="")
+
+    class Config:
+        orm_mode = True
 
 
 # class Tag(Base):
