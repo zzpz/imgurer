@@ -29,12 +29,17 @@ app.include_router(users.router)
 templates = Jinja2Templates(directory="templates")
 
 # alembic replaces this (we don't want to couple the app to the database creation/migration)
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
+
+
+@app.get("/t")
+async def fp_upload(request: Request):
+    return templates.TemplateResponse("fp_upload.html", {"request": request})
 
 
 @app.get("/NAS/{f1}/{f2}/{f3}/{file}", tags=["development", "serveImages"])
