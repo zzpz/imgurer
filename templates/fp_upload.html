@@ -17,19 +17,18 @@
 
 
 
-
 <input type="file" class="filepond" name="image" multiple data-allow-reorder="true" data-max-file-size="3MB"
-    data-max-files="3" enctype="multipart/form-data">
-
+    data-max-files="3">
 <script>
 
     FilePond.setOptions({
+        instantUpload: false,
         server: '/images/upload'
     });
 
     FilePond.registerPlugin(
 
-        // encodes the file as base64 data
+        // encodes the file as base64 data 
         // FilePondPluginFileEncode,
 
         // validates the size of the file
