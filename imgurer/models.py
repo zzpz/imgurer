@@ -45,12 +45,13 @@ class User(Base):
 class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
+    fid = Column(String, default="")  # seaweedFS file url
     date_created = Column(DateTime, server_default=func.now())
     parsed = Column(Boolean, default=False)
     dhash128 = Column(String, default="")
     filename = Column(String, default="")
-    url = Column(String, default="")
-    url_thumb = Column(String, default="")
+    url = Column(String, default="")  # TODO: deprecate
+    url_thumb = Column(String, default="")  # TODO: deprecate
     in_bktree = Column(Boolean, default=False)
 
     # dhash64 = Column(String, default="")  # TODO : binary
