@@ -1,6 +1,21 @@
 from fastapi import Header
 from .database import SessionLocal
 
+# config
+from functools import lru_cache
+from . import config
+
+
+@lru_cache()
+def get_settings():
+    """
+    caches a config.Settings instance for
+    - accessing environmental variables
+    - db user + pw
+    - etc
+    """
+    return config.Settings()
+
 
 async def valid_content_length(content_length: int = Header(..., lt=12_000)):
     """
@@ -9,7 +24,7 @@ async def valid_content_length(content_length: int = Header(..., lt=12_000)):
     return content_length
 
 
-# a dependency
+# TODO: refactor NAS to be an alternate 'localhost' file store
 async def get_nas():
     nas = "NAS"
     yield nas

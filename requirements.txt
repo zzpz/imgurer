@@ -11,4 +11,7 @@ pillow  # image manipulation
 pybktree # tree storage for ~ O(LogN) search of closeness
 aiofiles # for serving our static files from disk
 psycopg2 #alembic migrations
+#python-dotenv #for reading our .env file
+#aiohttp # async requests
+requests #sync requests
 #dhash #for computing hashes
