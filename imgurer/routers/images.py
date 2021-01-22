@@ -22,12 +22,30 @@ from ..crud import (
     browse_images,
 )
 
+# settings
+from .. import config
+
+# seaweedFS api requests
+import requests
+import json
+
+# from types import SimpleNamespace
+
+
 # disk
 import shutil
 
 # dependency
-from ..dependencies import valid_content_length, get_nas, get_images_db, get_thumbs_nas
+from ..dependencies import (
+    valid_content_length,
+    get_nas,
+    get_images_db,
+    get_thumbs_nas,
+    get_settings,
+)
+
 from .users import get_current_user
+
 
 # Front end
 from fastapi.templating import Jinja2Templates
@@ -43,6 +61,66 @@ router = APIRouter(
 
 
 templates = Jinja2Templates(directory="templates")
+
+
+@router.post("/dev_upload", tags=["development", "seaweed"])
+async def weed_upload_image(
+    image: UploadFile = File(...),
+    # image: UploadFile = None,
+    settings: config.Settings = Depends(get_settings),
+    images_db: Session = Depends(get_images_db),
+):
+    """
+    Takes a supplied file (Image), queries filestore to assign a file id, saves file, updates database with url for query and returns that fid
+    """
+    url = settings.WEED_MASTER_URL
+    master_fid_req_url = f"{url}/dir/assign"
+    fid = await (request_fid(master_fid_req_url))
+
+    # optional --> save to temp storage and move over to FS when confirmed (form submit)
+
+    # process image now or later? later seems best TODO: refactor frontend search
+
+    # save to fs
+    save_response = await (
+        save_to_fid(master_url=settings.WEED_MASTER_URL, fid=fid, image=image)
+    )
+
+    # save to database
+
+    # img_create = ImageCreate(fid,)
+    # class ImageCreate(ImageBase):
+    # url: str
+    # filename: str
+    # thumb_url: Optional[str] = None
+    # dhash64: Optional[str] = None
+    # dhash128: Optional[str] = None
+    # phash: Optional[str] = None
+    # parsed: bool = False
+    # in_bktree: bool = False
+
+    return {"fid": fid}
+
+
+async def save_to_fid(master_url: str, fid: str, image: UploadFile = File(...)):
+    """
+    # After saving to filestore, writes to database the fid for lookup
+    TODO: catch errors if seaweed not packaged
+    """
+    print(image.content_type)
+    print(master_url, fid)
+    response = requests.post(f"{master_url}/{fid}", files={image.filename: image.file})
+    print(response.content.decode("utf-8"))
+    return response.content
+
+
+async def request_fid(master_url: str):
+
+    seaweed_str_response = requests.get(master_url).content.decode("utf-8")  # request
+    seaweed_str_response = json.loads(seaweed_str_response)  # jsonified
+    #    pyobj = json.loads(seaweed_str_response, object_hook=lambda d: SimpleNamespace(**d)) #pyobject example for pyobj.fid
+
+    return seaweed_str_response["fid"]
 
 
 # use as endpoint for multiple images in parallel fashion for uploads
